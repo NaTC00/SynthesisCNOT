@@ -1,0 +1,15 @@
+9
+T+ 7
+H 7
+T+ 1
+X 0
+CNOT 2 5
+X 0
+CNOT 8 2
+X 5
+T 0
+T 8
+T 7
+T 0
+T+ 3
+CNOT 3 5

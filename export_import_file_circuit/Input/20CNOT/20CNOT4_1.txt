@@ -1,0 +1,8 @@
+20
+T 14
+H 8
+CNOT 8 5
+T+ 0
+CNOT 6 7
+CNOT 5 10
+CNOT 11 12

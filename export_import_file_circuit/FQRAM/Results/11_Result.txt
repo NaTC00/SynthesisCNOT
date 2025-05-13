@@ -1,0 +1,5 @@
+File Input                Matrice Adiacenza         CNOT Originale  CNOT Qiskit     CNOT Java       Fidelity Qiskit      Fidelity Java       
+============================================================================================================================================
+11_Input.txt              adj_4_qubit.txt           160             0               0               1.000000             1.000000            
+
+Java con meno CNOT di Qiskit: 0/1

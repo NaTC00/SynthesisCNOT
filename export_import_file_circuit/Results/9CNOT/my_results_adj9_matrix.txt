@@ -1,0 +1,26 @@
+File Input                Matrice Adiacenza         CNOT Originale  CNOT Qiskit     CNOT Java       Fidelity Qiskit      Fidelity Java       
+============================================================================================================================================
+9CNOT3_4.txt              adj9_matrix.txt           3               9               10              0.000000             1.000000            
+9CNOT5_2.txt              adj9_matrix.txt           5               14              18              1.000000             0.000000            
+9CNOT5_3.txt              adj9_matrix.txt           5               14              45              0.062500             0.000000            
+9CNOT3_5.txt              adj9_matrix.txt           3               9               20              0.250000             1.000000            
+9CNOT3_7.txt              adj9_matrix.txt           3               9               22              0.062500             1.000000            
+9CNOT5_1.txt              adj9_matrix.txt           5               14              6               0.031250             0.000000            
+9CNOT3_6.txt              adj9_matrix.txt           3               6               13              0.250000             0.250000            
+9CNOT3_2.txt              adj9_matrix.txt           3               9               16              0.062500             0.000000            
+9CNOT5_4.txt              adj9_matrix.txt           5               17              9               0.062500             1.000000            
+9CNOT5_5.txt              adj9_matrix.txt           5               14              10              0.000000             0.000000            
+9CNOT3_3.txt              adj9_matrix.txt           3               12              13              0.250000             1.000000            
+9CNOT3_1.txt              adj9_matrix.txt           3               12              20              0.062500             0.000000            
+9CNOT5_7.txt              adj9_matrix.txt           5               23              24              0.000000             1.000000            
+9CNOT5_6.txt              adj9_matrix.txt           5               17              24              0.250000             0.000000            
+9CNOT3_10.txt             adj9_matrix.txt           3               9               4               0.000000             0.000000            
+9CNOT5_8.txt              adj9_matrix.txt           5               20              35              0.000000             0.000000            
+9CNOT5_9.txt              adj9_matrix.txt           5               17              29              0.011384             1.000000            
+9CNOT3_8.txt              adj9_matrix.txt           3               9               13              0.250000             0.000000            
+9CNOT3_9.txt              adj9_matrix.txt           3               3               4               1.000000             0.000000            
+9CNOT10_1.txt             adj9_matrix.txt           10              37              50              0.002288             0.000000            
+9CNOT5_10.txt             adj9_matrix.txt           5               17              45              0.000000             0.000000            
+9CNOT10_2.txt             adj9_matrix.txt           10              28              55              0.000000             0.000000            
+
+Java con meno CNOT di Qiskit: 4/22

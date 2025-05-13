@@ -1,0 +1,72 @@
+16
+T+ 8
+X 10
+X 11
+T+ 5
+CNOT 2 11
+T 3
+H 3
+X 1
+T 12
+X 8
+CNOT 14 15
+T 2
+T 15
+T+ 12
+T 8
+H 14
+CNOT 7 9
+T 4
+T+ 5
+T+ 10
+X 2
+T+ 11
+H 1
+T+ 0
+T+ 9
+T+ 12
+T+ 4
+T+ 4
+CNOT 13 4
+T 11
+X 11
+T 7
+T+ 10
+T+ 0
+T 1
+CNOT 7 2
+T 9
+X 1
+T+ 4
+T+ 2
+T 0
+T 11
+T+ 5
+T 10
+T 6
+H 11
+CNOT 11 15
+T+ 8
+T+ 3
+T+ 12
+X 4
+X 15
+H 3
+H 9
+T+ 11
+X 3
+T 6
+H 0
+T 11
+T+ 11
+T 0
+T+ 14
+CNOT 1 12
+X 3
+X 3
+T 1
+T+ 7
+H 2
+T+ 9
+X 6
+CNOT 15 11

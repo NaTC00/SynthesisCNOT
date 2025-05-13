@@ -1,0 +1,45 @@
+16
+T 8
+CNOT 15 5
+T+ 1
+T 4
+X 13
+H 11
+T+ 4
+T 5
+H 0
+X 8
+T+ 10
+T 12
+CNOT 6 5
+T 1
+T+ 3
+T+ 14
+T+ 9
+T+ 15
+CNOT 11 2
+CNOT 6 12
+T 3
+T 7
+T+ 12
+T 15
+T+ 5
+T+ 0
+T 6
+H 10
+T+ 13
+T 3
+T 0
+CNOT 5 6
+T 9
+CNOT 15 2
+T 0
+T+ 12
+X 15
+T+ 8
+T+ 9
+T+ 8
+CNOT 0 12
+X 14
+T+ 8
+CNOT 11 4

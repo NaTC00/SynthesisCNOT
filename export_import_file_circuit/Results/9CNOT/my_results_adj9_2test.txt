@@ -1,0 +1,26 @@
+File Input                Matrice Adiacenza         CNOT Originale  CNOT Qiskit     CNOT Java       Fidelity Qiskit      Fidelity Java       
+============================================================================================================================================
+9CNOT3_4.txt              adj9_2test.txt            3               12              18              0.000000             1.000000            
+9CNOT5_2.txt              adj9_2test.txt            5               11              14              1.000000             0.000000            
+9CNOT5_3.txt              adj9_2test.txt            5               23              45              0.000000             0.000000            
+9CNOT3_5.txt              adj9_2test.txt            3               15              46              1.000000             1.000000            
+9CNOT3_7.txt              adj9_2test.txt            3               12              22              0.015625             1.000000            
+9CNOT5_1.txt              adj9_2test.txt            5               8               6               0.250000             0.000000            
+9CNOT3_6.txt              adj9_2test.txt            3               12              26              0.062500             0.250000            
+9CNOT3_2.txt              adj9_2test.txt            3               21              24              0.053347             0.000000            
+9CNOT5_4.txt              adj9_2test.txt            5               23              18              0.053347             1.000000            
+9CNOT5_5.txt              adj9_2test.txt            5               17              20              0.009153             0.000000            
+9CNOT3_3.txt              adj9_2test.txt            3               12              14              0.250000             1.000000            
+9CNOT3_1.txt              adj9_2test.txt            3               18              36              0.000000             0.000000            
+9CNOT5_7.txt              adj9_2test.txt            5               23              29              0.062500             1.000000            
+9CNOT5_6.txt              adj9_2test.txt            5               29              71              0.000000             0.000000            
+9CNOT3_10.txt             adj9_2test.txt            3               18              4               0.000000             0.000000            
+9CNOT5_8.txt              adj9_2test.txt            5               26              39              0.000000             0.000000            
+9CNOT5_9.txt              adj9_2test.txt            5               26              35              0.003334             1.000000            
+9CNOT3_8.txt              adj9_2test.txt            3               9               6               1.000000             0.000000            
+9CNOT3_9.txt              adj9_2test.txt            3               9               23              1.000000             0.000000            
+9CNOT10_1.txt             adj9_2test.txt            10              46              58              0.000000             0.000000            
+9CNOT5_10.txt             adj9_2test.txt            5               23              52              0.015625             0.000000            
+9CNOT10_2.txt             adj9_2test.txt            10              34              53              0.000000             0.000000            
+
+Java con meno CNOT di Qiskit: 4/22
