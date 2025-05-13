@@ -11,21 +11,21 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            /*"args": [
-                "./Adj/adj9_matrix.txt",
-                "../cnotsynth-Java/cnotsynth.jar",
-                "./Input/9CNOT",
-                "./Output/9CNOT",
-                "./Results/9CNOT"
-                
-            ]*/
             "args": [
+                "./Adj/adj_16_IBMQX5.txt",
+                "../cnotsynth-Java/cnotsynth.jar",
+                "./Input/16CNOT",
+                "./Output/16CNOT",
+                "./Results/16CNOT"
+                
+            ]
+            /*"args": [
                 "./Adj/adj_4_1.txt",
                 "../cnotsynth-Java/cnotsynth.jar",
                 "./FQRAM/Input",
                 "./FQRAM/Output",
                 "./FQRAM/Results"
-            ]
+            ]*/
         }
     ]
 }

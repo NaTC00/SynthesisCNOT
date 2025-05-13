@@ -33,52 +33,89 @@ def check_input_files(file):
 
 
 def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath_jar, coupling_map, choice, circuit=None):
-    qc_original = QuantumCircuit(circuit.num_qubits)
-    qc_original = qc_original.compose(circuit)
+    
 
     if choice == "1":
        qc_original = create_circuit_from_simple_file(filepath_input)
 
-    #layout = get_layout(qc_original.qregs[0])
-
+    if choice == "2":
+        qc_original = QuantumCircuit(circuit.num_qubits)
+        qc_original = qc_original.compose(circuit)
     
 
-    create_file_from_circuit(qc_original, filepath_input, ['CNOT', 'H', 'S', 'S+', 'T', 'T+', 'X', 'Y', 'Z'])
-    run_java_cnotsynth(filepath_adj, filepath_input, filepath_output, filepath_jar)
+    """create_file_from_circuit(qc_original, filepath_input, ['CNOT', 'H', 'S', 'S+', 'T', 'T+', 'X', 'Y', 'Z'])
+    run_java_cnotsynth(filepath_adj, filepath_input, filepath_output, filepath_jar) """
 
-    qc_qiskit = transpile(
+    qc_qiskit0 = transpile(
         qc_original,
         basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
         coupling_map=coupling_map,
-        #initial_layout=layout,
         seed_transpiler=123,
         optimization_level=0
     )
 
-    print(qc_original)
+    qc_qiskit1 = transpile(
+        qc_original,
+        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
+        coupling_map=coupling_map,
+        seed_transpiler=123,
+        optimization_level=1
+    )
 
-    qc_java = create_circuit_from_file(filepath_output)
+    qc_qiskit2 = transpile(
+        qc_original,
+        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
+        coupling_map=coupling_map,
+        seed_transpiler=123,
+        optimization_level=2
+    )
+
+    qc_qiskit3 = transpile(
+        qc_original,
+        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
+        coupling_map=coupling_map,
+        seed_transpiler=123,
+        optimization_level=3
+    )
+   
+    num_cnot_qc_original = count_cx_gates(qc_original)
+    num_cnot_qc_qiskit0 = count_cx_gates(qc_qiskit0)
+    num_cnot_qc_qiskit1 = count_cx_gates(qc_qiskit1)
+    num_cnot_qc_qiskit2 = count_cx_gates(qc_qiskit2)
+    num_cnot_qc_qiskit3 = count_cx_gates(qc_qiskit3)
+
+
+    """qc_java = create_circuit_from_file(filepath_output)
 
     fidelity_qiskit, fidelity_java = simulate_and_compare(qc_original, qc_qiskit, qc_java)
 
     num_cnot_original = count_cx_gates(qc_original)
     num_cnot_qiskit = count_cx_gates(qc_qiskit)
-    num_cnot_java = count_cx_gates(qc_java)
+    num_cnot_java = count_cx_gates(qc_java)"""
 
     return (
         os.path.basename(filepath_input),
         os.path.basename(filepath_adj),
-        num_cnot_original,
-        num_cnot_qiskit,
-        num_cnot_java,
-        fidelity_qiskit,
-        fidelity_java
+        num_cnot_qc_original,
+        num_cnot_qc_qiskit0,
+        num_cnot_qc_qiskit1,
+        num_cnot_qc_qiskit2,
+        num_cnot_qc_qiskit3
+        #fidelity_java
     )
 
 def java_better_stats(results):
     better = sum(1 for row in results if row[4] < row[3])
     return better, len(results)
 
+def save_results_traspiler(results, results_file):
+    with open(results_file, "w") as f:
+        f.write(f"{'File Input':<25} {'Matrice Adiacenza':<25} {'CNOT Originale':<15} {'CNOT Qiskit_Level0':<15} {'CNOT Qiskit_Level1':<15} {'CNOT Qiskit_Level2':<20} {'CNOT Qiskit_Level3':<20}\n")
+        f.write("=" * 140 + "\n")
+        for row in results:
+            f.write(f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<20} {row[4]:<20} {row[5]:<25} {row[6]:<25}\n")
+        # ---------- riepilogo finale ----------
+        f.write("\n")
 
 def save_results(results, results_file):
     java_better, total = java_better_stats(results)
@@ -114,12 +151,12 @@ def run_random_circuit_synth(filepath_adj, filepath_jar, folder_input, folder_ou
             "1"
         )
         results.append(result)
-        print(f"file: {filepath_input} fidelity_qiskit: {result[5]} | fidelity_java: {result[6]}")
-        print(f"cnot_original: {result[2]} | cnot_qiskit: {result[3]} | cnot_java: {result[4]}\n")
+       # print(f"file: {filepath_input} fidelity_qiskit: {result[5]} | fidelity_java: {result[6]}")
+       # print(f"cnot_original: {result[2]} | cnot_qiskit: {result[3]} | cnot_java: {result[4]}\n")
 
     adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
     results_file = os.path.join(folder_results, f"my_results_{adj_name}.txt")
-    save_results(results, results_file)
+    save_results_traspiler(results, results_file)
 
     print(f"Processo completato! Risultati salvati in {results_file}")
 
