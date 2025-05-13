@@ -34,7 +34,6 @@ def check_input_files(file):
 
 def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath_jar, coupling_map, choice, circuit=None):
     
-
     if choice == "1":
        qc_original = create_circuit_from_simple_file(filepath_input)
 
@@ -42,10 +41,6 @@ def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath
         qc_original = QuantumCircuit(circuit.num_qubits)
         qc_original = qc_original.compose(circuit)
     
-
-    """create_file_from_circuit(qc_original, filepath_input, ['CNOT', 'H', 'S', 'S+', 'T', 'T+', 'X', 'Y', 'Z'])
-    run_java_cnotsynth(filepath_adj, filepath_input, filepath_output, filepath_jar) """
-
     qc_qiskit0 = transpile(
         qc_original,
         basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
@@ -85,14 +80,6 @@ def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath
     num_cnot_qc_qiskit3 = count_cx_gates(qc_qiskit3)
 
 
-    """qc_java = create_circuit_from_file(filepath_output)
-
-    fidelity_qiskit, fidelity_java = simulate_and_compare(qc_original, qc_qiskit, qc_java)
-
-    num_cnot_original = count_cx_gates(qc_original)
-    num_cnot_qiskit = count_cx_gates(qc_qiskit)
-    num_cnot_java = count_cx_gates(qc_java)"""
-
     return (
         os.path.basename(filepath_input),
         os.path.basename(filepath_adj),
@@ -101,7 +88,7 @@ def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath
         num_cnot_qc_qiskit1,
         num_cnot_qc_qiskit2,
         num_cnot_qc_qiskit3
-        #fidelity_java
+        
     )
 
 def java_better_stats(results):
