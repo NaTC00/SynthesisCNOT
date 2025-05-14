@@ -1,10 +1,12 @@
 import sys
 import os
+from matplotlib import pyplot as plt
 from qiskit import QuantumCircuit, transpile
 from qiskit.providers.fake_provider import GenericBackendV2
 from sklearn import datasets
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import normalize
+from qiskit.visualization import circuit_drawer
 from circuit_utils import (
     FFQRAM,
     create_circuit_from_file,
@@ -35,59 +37,47 @@ def check_input_files(file):
 def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath_jar, coupling_map, choice, circuit=None):
     
     if choice == "1":
-       qc_original = create_circuit_from_simple_file(filepath_input)
+        qc_original = create_circuit_from_simple_file(filepath_input)
+        create_file_from_circuit(qc_original, filepath_input, ['CNOT', 'H', 'S', 'S+', 'T', 'T+', 'X', 'Y', 'Z'])
 
+    if(filepath_input == "./Input/16CNOT/16CNOT32_4.txt"):
+        qc_original.draw(output="mpl", scale=0.3)
+   
     if choice == "2":
         qc_original = QuantumCircuit(circuit.num_qubits)
         qc_original = qc_original.compose(circuit)
+
+    transpiler_result = []
+    num_cnot_list = []
+
+    for i in range(4):
+  
+        qc_transpiled = transpile(
+        qc_original,
+        basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z'],
+        coupling_map=coupling_map,
+        layout_method="trivial",
+        seed_transpiler=123,
+        optimization_level=i
+        )
+        transpiler_result.append(qc_transpiled)
     
-    qc_qiskit0 = transpile(
-        qc_original,
-        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
-        coupling_map=coupling_map,
-        seed_transpiler=123,
-        optimization_level=0
-    )
+    for qc_transpiled in transpiler_result:
+        num_cnot = count_cx_gates(qc_transpiled)
+        num_cnot_list.append(num_cnot)
 
-    qc_qiskit1 = transpile(
-        qc_original,
-        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
-        coupling_map=coupling_map,
-        seed_transpiler=123,
-        optimization_level=1
-    )
 
-    qc_qiskit2 = transpile(
-        qc_original,
-        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
-        coupling_map=coupling_map,
-        seed_transpiler=123,
-        optimization_level=2
-    )
-
-    qc_qiskit3 = transpile(
-        qc_original,
-        basis_gates=['cx', 'h', 's', 'stg', 't', 'tdg', 'x', 'y', 'z'],
-        coupling_map=coupling_map,
-        seed_transpiler=123,
-        optimization_level=3
-    )
    
     num_cnot_qc_original = count_cx_gates(qc_original)
-    num_cnot_qc_qiskit0 = count_cx_gates(qc_qiskit0)
-    num_cnot_qc_qiskit1 = count_cx_gates(qc_qiskit1)
-    num_cnot_qc_qiskit2 = count_cx_gates(qc_qiskit2)
-    num_cnot_qc_qiskit3 = count_cx_gates(qc_qiskit3)
+    
+
 
 
     return (
         os.path.basename(filepath_input),
         os.path.basename(filepath_adj),
         num_cnot_qc_original,
-        num_cnot_qc_qiskit0,
-        num_cnot_qc_qiskit1,
-        num_cnot_qc_qiskit2,
-        num_cnot_qc_qiskit3
+        num_cnot_list
         
     )
 
@@ -100,7 +90,10 @@ def save_results_traspiler(results, results_file):
         f.write(f"{'File Input':<25} {'Matrice Adiacenza':<25} {'CNOT Originale':<15} {'CNOT Qiskit_Level0':<15} {'CNOT Qiskit_Level1':<15} {'CNOT Qiskit_Level2':<20} {'CNOT Qiskit_Level3':<20}\n")
         f.write("=" * 140 + "\n")
         for row in results:
-            f.write(f"{row[0]:<25} {row[1]:<25} {row[2]:<20} {row[3]:<20} {row[4]:<20} {row[5]:<25} {row[6]:<25}\n")
+            f.write(f"{row[0]:<25} {row[1]:<25} {row[2]:<20}")
+            for num_cnot in row[3]:
+                  f.write(f"{num_cnot}:<25")
+            f.write("\n")
         # ---------- riepilogo finale ----------
         f.write("\n")
 
