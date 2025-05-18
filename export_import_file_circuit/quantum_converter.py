@@ -236,17 +236,7 @@ def main():
     adj_matrix = load_adjacency_matrix_from_file(filepath_adj)
     coupling_map = matrix_to_coupling_map(adj_matrix)
 
-    print("Seleziona un'opzione:")
-    print("1. Sperimentazione sintesi CNOT su circuiti randomici")
-    print("2. Sperimentazione sintesi CNOT per FFQRAM")
-
-    choice = input("Inserisci il numero dell'opzione (1 o 2): ")
-
-    if choice.strip() == "1":
-        run_random_circuit_synth(filepath_adj, filepath_jar, folder_input, folder_output, folder_results, coupling_map)
-    elif choice.strip() == "2":
-        run_ffqram_synthesis(filepath_adj, filepath_jar, folder_input, folder_output, folder_results, coupling_map)
-
+    run_random_circuit_synth(filepath_adj, filepath_jar, folder_input, folder_output, folder_results, coupling_map)
     
 
 
