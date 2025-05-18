@@ -1,0 +1,82 @@
+File Input                Matrice Adiacenza         CNOT Originale       CNOT Qiskit_Level0        CNOT Qiskit_Level1        CNOT Qiskit_Level2        CNOT Qiskit_Level3       
+==========================================================================================================================================================================
+16CNOT32_4.txt            adj_16_square.txt         32                  143                      113                      105                      105                      
+16CNOT16_5.txt            adj_16_square.txt         16                  61                       52                       40                       40                       
+16CNOT16_4.txt            adj_16_square.txt         16                  79                       67                       60                       60                       
+16CNOT32_5.txt            adj_16_square.txt         32                  152                      140                      118                      118                      
+16CNOT32_7.txt            adj_16_square.txt         32                  149                      116                      103                      103                      
+16CNOT16_6.txt            adj_16_square.txt         16                  67                       61                       58                       58                       
+16CNOT16_7.txt            adj_16_square.txt         16                  79                       67                       63                       63                       
+16CNOT32_6.txt            adj_16_square.txt         32                  143                      113                      104                      104                      
+16CNOT32_2.txt            adj_16_square.txt         32                  143                      131                      119                      119                      
+16CNOT64_8.txt            adj_16_square.txt         64                  259                      217                      201                      201                      
+16CNOT16_3.txt            adj_16_square.txt         16                  67                       58                       54                       54                       
+16CNOT16_2.txt            adj_16_square.txt         16                  85                       64                       62                       62                       
+16CNOT64_9.txt            adj_16_square.txt         64                  262                      244                      226                      226                      
+16CNOT32_3.txt            adj_16_square.txt         32                  137                      122                      110                      110                      
+16CNOT32_1.txt            adj_16_square.txt         32                  128                      120                      100                      100                      
+16CNOT256_9.txt           adj_16_square.txt         256                 1150                     913                      855                      855                      
+16CNOT256_8.txt           adj_16_square.txt         256                 1144                     916                      849                      849                      
+16CNOT16_1.txt            adj_16_square.txt         16                  70                       55                       53                       53                       
+16CNOT128_9.txt           adj_16_square.txt         128                 557                      477                      420                      420                      
+16CNOT8_1.txt             adj_16_square.txt         8                   38                       35                       32                       32                       
+16CNOT128_10.txt          adj_16_square.txt         128                 512                      426                      422                      422                      
+16CNOT128_8.txt           adj_16_square.txt         128                 563                      430                      415                      415                      
+16CNOT32_10.txt           adj_16_square.txt         32                  140                      117                      111                      111                      
+16CNOT8_2.txt             adj_16_square.txt         8                   29                       32                       28                       28                       
+16CNOT16_10.txt           adj_16_square.txt         16                  70                       58                       56                       56                       
+16CNOT256_10.txt          adj_16_square.txt         256                 1126                     902                      833                      833                      
+16CNOT8_3.txt             adj_16_square.txt         8                   44                       44                       39                       39                       
+16CNOT8_7.txt             adj_16_square.txt         8                   44                       38                       36                       36                       
+16CNOT8_6.txt             adj_16_square.txt         8                   41                       38                       36                       36                       
+16CNOT8_4.txt             adj_16_square.txt         8                   32                       32                       32                       32                       
+16CNOT4_9.txt             adj_16_square.txt         4                   25                       25                       25                       25                       
+16CNOT4_8.txt             adj_16_square.txt         4                   16                       16                       14                       14                       
+16CNOT8_5.txt             adj_16_square.txt         8                   38                       35                       33                       33                       
+16CNOT8_8.txt             adj_16_square.txt         8                   29                       29                       26                       26                       
+16CNOT4_5.txt             adj_16_square.txt         4                   25                       25                       25                       25                       
+16CNOT4_4.txt             adj_16_square.txt         4                   19                       16                       16                       16                       
+16CNOT8_9.txt             adj_16_square.txt         8                   29                       29                       29                       29                       
+16CNOT128_1.txt           adj_16_square.txt         128                 569                      397                      400                      400                      
+16CNOT128_3.txt           adj_16_square.txt         128                 572                      452                      400                      400                      
+16CNOT4_10.txt            adj_16_square.txt         4                   19                       19                       19                       19                       
+16CNOT4_6.txt             adj_16_square.txt         4                   25                       19                       19                       19                       
+16CNOT8_10.txt            adj_16_square.txt         8                   32                       32                       27                       27                       
+16CNOT4_7.txt             adj_16_square.txt         4                   22                       22                       22                       22                       
+16CNOT128_2.txt           adj_16_square.txt         128                 560                      450                      416                      416                      
+16CNOT128_6.txt           adj_16_square.txt         128                 515                      450                      424                      424                      
+16CNOT4_3.txt             adj_16_square.txt         4                   28                       31                       31                       31                       
+16CNOT4_2.txt             adj_16_square.txt         4                   25                       22                       20                       20                       
+16CNOT128_7.txt           adj_16_square.txt         128                 590                      473                      416                      416                      
+16CNOT128_5.txt           adj_16_square.txt         128                 530                      424                      420                      420                      
+16CNOT4_1.txt             adj_16_square.txt         4                   25                       22                       20                       20                       
+16CNOT128_4.txt           adj_16_square.txt         128                 521                      417                      399                      399                      
+16CNOT64_7.txt            adj_16_square.txt         64                  289                      226                      208                      208                      
+16CNOT256_5.txt           adj_16_square.txt         256                 1150                     934                      844                      844                      
+16CNOT256_4.txt           adj_16_square.txt         256                 1126                     922                      848                      848                      
+16CNOT64_6.txt            adj_16_square.txt         64                  262                      199                      190                      188                      
+16CNOT64_4.txt            adj_16_square.txt         64                  319                      222                      207                      207                      
+16CNOT256_6.txt           adj_16_square.txt         256                 1195                     891                      820                      820                      
+16CNOT256_7.txt           adj_16_square.txt         256                 1162                     940                      869                      867                      
+16CNOT64_5.txt            adj_16_square.txt         64                  274                      223                      214                      214                      
+16CNOT64_1.txt            adj_16_square.txt         64                  280                      226                      224                      224                      
+16CNOT256_3.txt           adj_16_square.txt         256                 1168                     937                      870                      868                      
+16CNOT256_2.txt           adj_16_square.txt         256                 1126                     920                      817                      817                      
+16CNOT32_8.txt            adj_16_square.txt         32                  167                      132                      132                      132                      
+16CNOT64_2.txt            adj_16_square.txt         64                  277                      253                      226                      226                      
+16CNOT64_10.txt           adj_16_square.txt         64                  277                      250                      199                      199                      
+16CNOT16_9.txt            adj_16_square.txt         16                  82                       64                       55                       55                       
+16CNOT256_1.txt           adj_16_square.txt         256                 1132                     902                      848                      846                      
+16CNOT16_8.txt            adj_16_square.txt         16                  70                       55                       51                       51                       
+16CNOT64_3.txt            adj_16_square.txt         64                  271                      217                      193                      193                      
+16CNOT32_9.txt            adj_16_square.txt         32                  131                      104                      97                       97                       
+
+
+====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======
+Overhead medio con 4 CNOT: 442.50%
+Overhead medio con 8 CNOT: 317.50%
+Overhead medio con 16 CNOT: 280.47%
+Overhead medio con 32 CNOT: 278.05%
+Overhead medio con 64 CNOT: 260.20%
+Overhead medio con 128 CNOT: 254.47%
+Overhead medio con 256 CNOT: 266.76%

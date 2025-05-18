@@ -12,11 +12,11 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "./Adj/adj_16_IBMQX5.txt",
+                "./Adj/adj_20_IBMQX20.txt",
                 "../cnotsynth-Java/cnotsynth.jar",
-                "./Input/16CNOT",
-                "./Output/16CNOT",
-                "./Results/16CNOT"
+                "./Input/20CNOT",
+                "./Output/20CNOT",
+                "./Results/20CNOT"
                 
             ]
             /*"args": [

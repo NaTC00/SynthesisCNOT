@@ -1,73 +1,82 @@
-File Input                Matrice Adiacenza         CNOT Originale  CNOT Qiskit_Level0 CNOT Qiskit_Level1 CNOT Qiskit_Level2   CNOT Qiskit_Level3  
-============================================================================================================================================
-16CNOT32_4.txt            adj_16_IBMQX5.txt         32                   32                   32                   32                        32                       
-16CNOT16_5.txt            adj_16_IBMQX5.txt         16                   16                   16                   14                        14                       
-16CNOT16_4.txt            adj_16_IBMQX5.txt         16                   16                   16                   14                        14                       
-16CNOT32_5.txt            adj_16_IBMQX5.txt         32                   32                   32                   30                        30                       
-16CNOT32_7.txt            adj_16_IBMQX5.txt         32                   32                   32                   32                        32                       
-16CNOT16_6.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT16_7.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT32_6.txt            adj_16_IBMQX5.txt         32                   32                   32                   30                        30                       
-16CNOT32_2.txt            adj_16_IBMQX5.txt         32                   32                   32                   30                        30                       
-16CNOT64_8.txt            adj_16_IBMQX5.txt         64                   64                   64                   64                        64                       
-16CNOT16_3.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT16_2.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT64_9.txt            adj_16_IBMQX5.txt         64                   64                   64                   62                        62                       
-16CNOT32_3.txt            adj_16_IBMQX5.txt         32                   32                   32                   32                        32                       
-16CNOT32_1.txt            adj_16_IBMQX5.txt         32                   32                   30                   30                        30                       
-16CNOT256_9.txt           adj_16_IBMQX5.txt         256                  256                  252                  248                       248                      
-16CNOT256_8.txt           adj_16_IBMQX5.txt         256                  256                  250                  234                       236                      
-16CNOT16_1.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT128_9.txt           adj_16_IBMQX5.txt         128                  128                  126                  122                       122                      
-16CNOT8_1.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT128_10.txt          adj_16_IBMQX5.txt         128                  128                  126                  126                       126                      
-16CNOT128_8.txt           adj_16_IBMQX5.txt         128                  128                  128                  125                       125                      
-16CNOT32_10.txt           adj_16_IBMQX5.txt         32                   32                   30                   30                        30                       
-16CNOT8_2.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT16_10.txt           adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT256_10.txt          adj_16_IBMQX5.txt         256                  256                  254                  246                       246                      
-16CNOT8_3.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT8_7.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT8_6.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT8_4.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT4_9.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT4_8.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT8_5.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT8_8.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT4_5.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT4_4.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT8_9.txt             adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT128_1.txt           adj_16_IBMQX5.txt         128                  128                  124                  120                       120                      
-16CNOT128_3.txt           adj_16_IBMQX5.txt         128                  128                  128                  128                       128                      
-16CNOT4_10.txt            adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT4_6.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT8_10.txt            adj_16_IBMQX5.txt         8                    8                    8                    8                         8                        
-16CNOT4_7.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT128_2.txt           adj_16_IBMQX5.txt         128                  128                  128                  128                       128                      
-16CNOT128_6.txt           adj_16_IBMQX5.txt         128                  128                  128                  128                       126                      
-16CNOT4_3.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT4_2.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT128_7.txt           adj_16_IBMQX5.txt         128                  128                  128                  124                       124                      
-16CNOT128_5.txt           adj_16_IBMQX5.txt         128                  128                  124                  118                       118                      
-16CNOT4_1.txt             adj_16_IBMQX5.txt         4                    4                    4                    4                         4                        
-16CNOT128_4.txt           adj_16_IBMQX5.txt         128                  128                  126                  124                       122                      
-16CNOT64_7.txt            adj_16_IBMQX5.txt         64                   64                   64                   62                        60                       
-16CNOT256_5.txt           adj_16_IBMQX5.txt         256                  256                  256                  251                       251                      
-16CNOT256_4.txt           adj_16_IBMQX5.txt         256                  256                  256                  247                       243                      
-16CNOT64_6.txt            adj_16_IBMQX5.txt         64                   64                   64                   62                        62                       
-16CNOT64_4.txt            adj_16_IBMQX5.txt         64                   64                   62                   62                        62                       
-16CNOT256_6.txt           adj_16_IBMQX5.txt         256                  256                  252                  249                       247                      
-16CNOT256_7.txt           adj_16_IBMQX5.txt         256                  256                  256                  254                       254                      
-16CNOT64_5.txt            adj_16_IBMQX5.txt         64                   64                   64                   64                        64                       
-16CNOT64_1.txt            adj_16_IBMQX5.txt         64                   64                   64                   63                        63                       
-16CNOT256_3.txt           adj_16_IBMQX5.txt         256                  256                  256                  249                       249                      
-16CNOT256_2.txt           adj_16_IBMQX5.txt         256                  256                  254                  248                       248                      
-16CNOT32_8.txt            adj_16_IBMQX5.txt         32                   32                   32                   32                        32                       
-16CNOT64_2.txt            adj_16_IBMQX5.txt         64                   64                   64                   64                        64                       
-16CNOT64_10.txt           adj_16_IBMQX5.txt         64                   64                   64                   63                        63                       
-16CNOT16_9.txt            adj_16_IBMQX5.txt         16                   16                   16                   14                        14                       
-16CNOT256_1.txt           adj_16_IBMQX5.txt         256                  256                  254                  241                       243                      
-16CNOT16_8.txt            adj_16_IBMQX5.txt         16                   16                   16                   16                        16                       
-16CNOT64_3.txt            adj_16_IBMQX5.txt         64                   64                   64                   62                        62                       
-16CNOT32_9.txt            adj_16_IBMQX5.txt         32                   32                   32                   30                        30                       
+File Input                Matrice Adiacenza         CNOT Originale       CNOT Qiskit_Level0        CNOT Qiskit_Level1        CNOT Qiskit_Level2        CNOT Qiskit_Level3       
+==========================================================================================================================================================================
+16CNOT32_4.txt            adj_16_IBMQX5.txt         32                  200                      188                      178                      178                      
+16CNOT16_5.txt            adj_16_IBMQX5.txt         16                  106                      97                       88                       88                       
+16CNOT16_4.txt            adj_16_IBMQX5.txt         16                  79                       82                       80                       80                       
+16CNOT32_5.txt            adj_16_IBMQX5.txt         32                  230                      206                      190                      190                      
+16CNOT32_7.txt            adj_16_IBMQX5.txt         32                  188                      143                      139                      139                      
+16CNOT16_6.txt            adj_16_IBMQX5.txt         16                  82                       82                       82                       82                       
+16CNOT16_7.txt            adj_16_IBMQX5.txt         16                  103                      94                       94                       94                       
+16CNOT32_6.txt            adj_16_IBMQX5.txt         32                  212                      173                      160                      160                      
+16CNOT32_2.txt            adj_16_IBMQX5.txt         32                  191                      161                      149                      149                      
+16CNOT64_8.txt            adj_16_IBMQX5.txt         64                  433                      331                      282                      282                      
+16CNOT16_3.txt            adj_16_IBMQX5.txt         16                  73                       85                       81                       81                       
+16CNOT16_2.txt            adj_16_IBMQX5.txt         16                  79                       61                       61                       61                       
+16CNOT64_9.txt            adj_16_IBMQX5.txt         64                  409                      334                      311                      311                      
+16CNOT32_3.txt            adj_16_IBMQX5.txt         32                  167                      131                      119                      119                      
+16CNOT32_1.txt            adj_16_IBMQX5.txt         32                  188                      144                      144                      144                      
+16CNOT256_9.txt           adj_16_IBMQX5.txt         256                 1642                     1279                     1202                     1202                     
+16CNOT256_8.txt           adj_16_IBMQX5.txt         256                 1447                     1211                     1080                     1080                     
+16CNOT16_1.txt            adj_16_IBMQX5.txt         16                  103                      85                       79                       79                       
+16CNOT128_9.txt           adj_16_IBMQX5.txt         128                 767                      609                      586                      586                      
+16CNOT8_1.txt             adj_16_IBMQX5.txt         8                   65                       56                       54                       54                       
+16CNOT128_10.txt          adj_16_IBMQX5.txt         128                 716                      615                      559                      559                      
+16CNOT128_8.txt           adj_16_IBMQX5.txt         128                 794                      591                      559                      559                      
+16CNOT32_10.txt           adj_16_IBMQX5.txt         32                  185                      144                      136                      136                      
+16CNOT8_2.txt             adj_16_IBMQX5.txt         8                   56                       41                       39                       39                       
+16CNOT16_10.txt           adj_16_IBMQX5.txt         16                  100                      94                       90                       90                       
+16CNOT256_10.txt          adj_16_IBMQX5.txt         256                 1468                     1173                     1033                     1033                     
+16CNOT8_3.txt             adj_16_IBMQX5.txt         8                   50                       38                       38                       38                       
+16CNOT8_7.txt             adj_16_IBMQX5.txt         8                   47                       47                       43                       43                       
+16CNOT8_6.txt             adj_16_IBMQX5.txt         8                   38                       38                       38                       38                       
+16CNOT8_4.txt             adj_16_IBMQX5.txt         8                   56                       56                       56                       56                       
+16CNOT4_9.txt             adj_16_IBMQX5.txt         4                   37                       37                       34                       34                       
+16CNOT4_8.txt             adj_16_IBMQX5.txt         4                   22                       22                       22                       22                       
+16CNOT8_5.txt             adj_16_IBMQX5.txt         8                   50                       47                       47                       47                       
+16CNOT8_8.txt             adj_16_IBMQX5.txt         8                   41                       38                       38                       38                       
+16CNOT4_5.txt             adj_16_IBMQX5.txt         4                   25                       25                       25                       25                       
+16CNOT4_4.txt             adj_16_IBMQX5.txt         4                   19                       19                       19                       19                       
+16CNOT8_9.txt             adj_16_IBMQX5.txt         8                   59                       56                       56                       56                       
+16CNOT128_1.txt           adj_16_IBMQX5.txt         128                 773                      601                      525                      525                      
+16CNOT128_3.txt           adj_16_IBMQX5.txt         128                 794                      593                      544                      544                      
+16CNOT4_10.txt            adj_16_IBMQX5.txt         4                   25                       25                       25                       25                       
+16CNOT4_6.txt             adj_16_IBMQX5.txt         4                   16                       16                       16                       16                       
+16CNOT8_10.txt            adj_16_IBMQX5.txt         8                   56                       56                       56                       56                       
+16CNOT4_7.txt             adj_16_IBMQX5.txt         4                   19                       19                       16                       16                       
+16CNOT128_2.txt           adj_16_IBMQX5.txt         128                 743                      624                      578                      578                      
+16CNOT128_6.txt           adj_16_IBMQX5.txt         128                 791                      606                      574                      574                      
+16CNOT4_3.txt             adj_16_IBMQX5.txt         4                   31                       31                       31                       31                       
+16CNOT4_2.txt             adj_16_IBMQX5.txt         4                   37                       31                       29                       29                       
+16CNOT128_7.txt           adj_16_IBMQX5.txt         128                 764                      596                      551                      551                      
+16CNOT128_5.txt           adj_16_IBMQX5.txt         128                 812                      631                      572                      572                      
+16CNOT4_1.txt             adj_16_IBMQX5.txt         4                   37                       34                       34                       34                       
+16CNOT128_4.txt           adj_16_IBMQX5.txt         128                 719                      609                      568                      568                      
+16CNOT64_7.txt            adj_16_IBMQX5.txt         64                  334                      289                      267                      267                      
+16CNOT256_5.txt           adj_16_IBMQX5.txt         256                 1477                     1280                     1209                     1209                     
+16CNOT256_4.txt           adj_16_IBMQX5.txt         256                 1600                     1225                     1092                     1092                     
+16CNOT64_6.txt            adj_16_IBMQX5.txt         64                  352                      307                      294                      294                      
+16CNOT64_4.txt            adj_16_IBMQX5.txt         64                  367                      269                      243                      243                      
+16CNOT256_6.txt           adj_16_IBMQX5.txt         256                 1525                     1195                     1106                     1106                     
+16CNOT256_7.txt           adj_16_IBMQX5.txt         256                 1570                     1255                     1162                     1162                     
+16CNOT64_5.txt            adj_16_IBMQX5.txt         64                  406                      326                      302                      302                      
+16CNOT64_1.txt            adj_16_IBMQX5.txt         64                  343                      272                      260                      260                      
+16CNOT256_3.txt           adj_16_IBMQX5.txt         256                 1636                     1295                     1131                     1131                     
+16CNOT256_2.txt           adj_16_IBMQX5.txt         256                 1522                     1260                     1188                     1182                     
+16CNOT32_8.txt            adj_16_IBMQX5.txt         32                  203                      143                      125                      125                      
+16CNOT64_2.txt            adj_16_IBMQX5.txt         64                  391                      322                      291                      291                      
+16CNOT64_10.txt           adj_16_IBMQX5.txt         64                  394                      277                      263                      263                      
+16CNOT16_9.txt            adj_16_IBMQX5.txt         16                  118                      103                      90                       90                       
+16CNOT256_1.txt           adj_16_IBMQX5.txt         256                 1552                     1303                     1180                     1180                     
+16CNOT16_8.txt            adj_16_IBMQX5.txt         16                  97                       82                       78                       78                       
+16CNOT64_3.txt            adj_16_IBMQX5.txt         64                  385                      284                      268                      268                      
+16CNOT32_9.txt            adj_16_IBMQX5.txt         32                  155                      149                      154                      154                      
 
+
+====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======
+Overhead medio con 4 CNOT: 543.12%
+Overhead medio con 8 CNOT: 500.31%
+Overhead medio con 16 CNOT: 439.22%
+Overhead medio con 32 CNOT: 406.95%
+Overhead medio con 64 CNOT: 383.87%
+Overhead medio con 128 CNOT: 387.89%
+Overhead medio con 256 CNOT: 394.87%

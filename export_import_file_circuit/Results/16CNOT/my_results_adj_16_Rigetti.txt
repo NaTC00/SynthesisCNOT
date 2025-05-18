@@ -1,74 +1,82 @@
-File Input                Matrice Adiacenza         CNOT Originale  CNOT Qiskit     CNOT Java       Fidelity Qiskit      Fidelity Java       
-============================================================================================================================================
-16CNOT32_4.txt            adj_16_Rigetti.txt        32              218             419             0.000005             0.000000            
-16CNOT16_5.txt            adj_16_Rigetti.txt        16              112             289             0.000001             0.000000            
-16CNOT16_4.txt            adj_16_Rigetti.txt        16              100             296             0.000000             0.000000            
-16CNOT32_5.txt            adj_16_Rigetti.txt        32              230             659             0.000039             0.000000            
-16CNOT32_7.txt            adj_16_Rigetti.txt        32              224             703             0.000000             0.000000            
-16CNOT16_6.txt            adj_16_Rigetti.txt        16              109             236             0.000000             0.000000            
-16CNOT16_7.txt            adj_16_Rigetti.txt        16              124             221             0.000000             0.000000            
-16CNOT32_6.txt            adj_16_Rigetti.txt        32              233             908             0.000004             0.000000            
-16CNOT32_2.txt            adj_16_Rigetti.txt        32              170             636             0.000026             0.000000            
-16CNOT64_8.txt            adj_16_Rigetti.txt        64              424             1442            0.000011             0.000000            
-16CNOT16_3.txt            adj_16_Rigetti.txt        16              76              266             0.000133             0.146447            
-16CNOT16_2.txt            adj_16_Rigetti.txt        16              73              170             0.000009             0.000000            
-16CNOT64_9.txt            adj_16_Rigetti.txt        64              439             1394            0.000012             0.000001            
-16CNOT32_3.txt            adj_16_Rigetti.txt        32              194             737             0.000017             0.000000            
-16CNOT32_1.txt            adj_16_Rigetti.txt        32              227             534             0.000104             0.000000            
-16CNOT256_9.txt           adj_16_Rigetti.txt        256             1651            5787            0.000005             0.000052            
-16CNOT256_8.txt           adj_16_Rigetti.txt        256             1642            5552            0.000000             0.000011            
-16CNOT16_1.txt            adj_16_Rigetti.txt        16              91              305             0.000126             0.021447            
-16CNOT128_9.txt           adj_16_Rigetti.txt        128             833             2555            0.000000             0.000005            
-16CNOT8_1.txt             adj_16_Rigetti.txt        8               56              144             0.000000             0.000000            
-16CNOT128_10.txt          adj_16_Rigetti.txt        128             824             2755            0.000019             0.000019            
-16CNOT128_8.txt           adj_16_Rigetti.txt        128             800             2552            0.000008             0.000019            
-16CNOT32_10.txt           adj_16_Rigetti.txt        32              203             705             0.000147             0.000000            
-16CNOT8_2.txt             adj_16_Rigetti.txt        8               68              165             0.000000             0.000000            
-16CNOT16_10.txt           adj_16_Rigetti.txt        16              88              220             0.000021             0.000000            
-16CNOT256_10.txt          adj_16_Rigetti.txt        256             1564            5931            0.000003             0.000020            
-16CNOT8_3.txt             adj_16_Rigetti.txt        8               50              141             0.000000             1.000000            
-16CNOT8_7.txt             adj_16_Rigetti.txt        8               50              104             0.000000             0.036612            
-16CNOT8_6.txt             adj_16_Rigetti.txt        8               56              233             0.000000             1.000000            
-16CNOT8_4.txt             adj_16_Rigetti.txt        8               47              77              0.000000             0.000000            
-16CNOT4_9.txt             adj_16_Rigetti.txt        4               40              113             0.001667             0.000000            
-16CNOT4_8.txt             adj_16_Rigetti.txt        4               25              136             0.000000             0.000000            
-16CNOT8_5.txt             adj_16_Rigetti.txt        8               62              21              0.000000             0.000000            
-16CNOT8_8.txt             adj_16_Rigetti.txt        8               29              13              0.000000             0.000000            
-16CNOT4_5.txt             adj_16_Rigetti.txt        4               25              24              0.000000             0.000000            
-16CNOT4_4.txt             adj_16_Rigetti.txt        4               31              64              0.005692             0.000000            
-16CNOT8_9.txt             adj_16_Rigetti.txt        8               50              96              0.000000             1.000000            
-16CNOT128_1.txt           adj_16_Rigetti.txt        128             833             3097            0.000093             0.000006            
-16CNOT128_3.txt           adj_16_Rigetti.txt        128             848             2914            0.000013             0.000015            
-16CNOT4_10.txt            adj_16_Rigetti.txt        4               22              5               0.000000             0.000000            
-16CNOT4_6.txt             adj_16_Rigetti.txt        4               16              17              0.250000             0.000000            
-16CNOT8_10.txt            adj_16_Rigetti.txt        8               59              222             0.000000             0.000000            
-16CNOT4_7.txt             adj_16_Rigetti.txt        4               25              46              0.000000             1.000000            
-16CNOT128_2.txt           adj_16_Rigetti.txt        128             812             2787            0.000025             0.000027            
-16CNOT128_6.txt           adj_16_Rigetti.txt        128             809             2376            0.000012             0.000004            
-16CNOT4_3.txt             adj_16_Rigetti.txt        4               40              92              0.000000             0.000000            
-16CNOT4_2.txt             adj_16_Rigetti.txt        4               28              68              0.000000             1.000000            
-16CNOT128_7.txt           adj_16_Rigetti.txt        128             800             3127            0.000007             0.000004            
-16CNOT128_5.txt           adj_16_Rigetti.txt        128             800             3386            0.000018             0.000010            
-16CNOT4_1.txt             adj_16_Rigetti.txt        4               37              20              0.000000             0.000000            
-16CNOT128_4.txt           adj_16_Rigetti.txt        128             806             3233            0.000030             0.000038            
-16CNOT64_7.txt            adj_16_Rigetti.txt        64              409             1492            0.000091             0.000008            
-16CNOT256_5.txt           adj_16_Rigetti.txt        256             1717            5384            0.000011             0.000014            
-16CNOT256_4.txt           adj_16_Rigetti.txt        256             1570            6037            0.000008             0.000047            
-16CNOT64_6.txt            adj_16_Rigetti.txt        64              409             1349            0.000047             0.000004            
-16CNOT64_4.txt            adj_16_Rigetti.txt        64              418             1424            0.000006             0.000000            
-16CNOT256_6.txt           adj_16_Rigetti.txt        256             1579            6019            0.000004             0.000005            
-16CNOT256_7.txt           adj_16_Rigetti.txt        256             1771            6066            0.000047             0.000015            
-16CNOT64_5.txt            adj_16_Rigetti.txt        64              433             1527            0.000007             0.000000            
-16CNOT64_1.txt            adj_16_Rigetti.txt        64              424             1353            0.000014             0.000032            
-16CNOT256_3.txt           adj_16_Rigetti.txt        256             1666            5544            0.000025             0.000017            
-16CNOT256_2.txt           adj_16_Rigetti.txt        256             1675            5900            0.000021             0.000003            
-16CNOT32_8.txt            adj_16_Rigetti.txt        32              191             571             0.000000             0.000000            
-16CNOT64_2.txt            adj_16_Rigetti.txt        64              397             1483            0.000000             0.000002            
-16CNOT64_10.txt           adj_16_Rigetti.txt        64              382             1600            0.000023             0.000003            
-16CNOT16_9.txt            adj_16_Rigetti.txt        16              112             336             0.000000             0.000000            
-16CNOT256_1.txt           adj_16_Rigetti.txt        256             1702            6060            0.000011             0.000030            
-16CNOT16_8.txt            adj_16_Rigetti.txt        16              103             286             0.000015             0.000000            
-16CNOT64_3.txt            adj_16_Rigetti.txt        64              397             1221            0.000011             0.000001            
-16CNOT32_9.txt            adj_16_Rigetti.txt        32              173             671             0.000085             0.000250            
+File Input                Matrice Adiacenza         CNOT Originale       CNOT Qiskit_Level0        CNOT Qiskit_Level1        CNOT Qiskit_Level2        CNOT Qiskit_Level3       
+==========================================================================================================================================================================
+16CNOT32_4.txt            adj_16_Rigetti.txt        32                  218                      194                      184                      184                      
+16CNOT16_5.txt            adj_16_Rigetti.txt        16                  112                      103                      97                       97                       
+16CNOT16_4.txt            adj_16_Rigetti.txt        16                  100                      91                       85                       85                       
+16CNOT32_5.txt            adj_16_Rigetti.txt        32                  230                      227                      196                      196                      
+16CNOT32_7.txt            adj_16_Rigetti.txt        32                  224                      167                      158                      158                      
+16CNOT16_6.txt            adj_16_Rigetti.txt        16                  109                      109                      99                       99                       
+16CNOT16_7.txt            adj_16_Rigetti.txt        16                  124                      97                       95                       95                       
+16CNOT32_6.txt            adj_16_Rigetti.txt        32                  233                      182                      166                      166                      
+16CNOT32_2.txt            adj_16_Rigetti.txt        32                  170                      170                      160                      160                      
+16CNOT64_8.txt            adj_16_Rigetti.txt        64                  424                      320                      294                      294                      
+16CNOT16_3.txt            adj_16_Rigetti.txt        16                  76                       73                       69                       69                       
+16CNOT16_2.txt            adj_16_Rigetti.txt        16                  73                       70                       67                       67                       
+16CNOT64_9.txt            adj_16_Rigetti.txt        64                  439                      388                      359                      359                      
+16CNOT32_3.txt            adj_16_Rigetti.txt        32                  194                      152                      148                      148                      
+16CNOT32_1.txt            adj_16_Rigetti.txt        32                  227                      180                      171                      171                      
+16CNOT256_9.txt           adj_16_Rigetti.txt        256                 1651                     1381                     1229                     1229                     
+16CNOT256_8.txt           adj_16_Rigetti.txt        256                 1642                     1340                     1216                     1216                     
+16CNOT16_1.txt            adj_16_Rigetti.txt        16                  91                       82                       80                       80                       
+16CNOT128_9.txt           adj_16_Rigetti.txt        128                 833                      670                      611                      611                      
+16CNOT8_1.txt             adj_16_Rigetti.txt        8                   56                       53                       51                       51                       
+16CNOT128_10.txt          adj_16_Rigetti.txt        128                 824                      699                      619                      619                      
+16CNOT128_8.txt           adj_16_Rigetti.txt        128                 800                      660                      618                      618                      
+16CNOT32_10.txt           adj_16_Rigetti.txt        32                  203                      178                      161                      161                      
+16CNOT8_2.txt             adj_16_Rigetti.txt        8                   68                       59                       57                       57                       
+16CNOT16_10.txt           adj_16_Rigetti.txt        16                  88                       79                       70                       70                       
+16CNOT256_10.txt          adj_16_Rigetti.txt        256                 1564                     1377                     1235                     1235                     
+16CNOT8_3.txt             adj_16_Rigetti.txt        8                   50                       41                       39                       39                       
+16CNOT8_7.txt             adj_16_Rigetti.txt        8                   50                       53                       51                       51                       
+16CNOT8_6.txt             adj_16_Rigetti.txt        8                   56                       50                       44                       44                       
+16CNOT8_4.txt             adj_16_Rigetti.txt        8                   47                       44                       44                       44                       
+16CNOT4_9.txt             adj_16_Rigetti.txt        4                   40                       40                       40                       40                       
+16CNOT4_8.txt             adj_16_Rigetti.txt        4                   25                       25                       25                       25                       
+16CNOT8_5.txt             adj_16_Rigetti.txt        8                   62                       44                       44                       44                       
+16CNOT8_8.txt             adj_16_Rigetti.txt        8                   29                       32                       27                       27                       
+16CNOT4_5.txt             adj_16_Rigetti.txt        4                   25                       25                       25                       25                       
+16CNOT4_4.txt             adj_16_Rigetti.txt        4                   31                       31                       31                       31                       
+16CNOT8_9.txt             adj_16_Rigetti.txt        8                   50                       50                       50                       50                       
+16CNOT128_1.txt           adj_16_Rigetti.txt        128                 833                      673                      608                      606                      
+16CNOT128_3.txt           adj_16_Rigetti.txt        128                 848                      677                      582                      582                      
+16CNOT4_10.txt            adj_16_Rigetti.txt        4                   22                       22                       22                       22                       
+16CNOT4_6.txt             adj_16_Rigetti.txt        4                   16                       16                       16                       16                       
+16CNOT8_10.txt            adj_16_Rigetti.txt        8                   59                       65                       65                       65                       
+16CNOT4_7.txt             adj_16_Rigetti.txt        4                   25                       25                       23                       23                       
+16CNOT128_2.txt           adj_16_Rigetti.txt        128                 812                      710                      652                      652                      
+16CNOT128_6.txt           adj_16_Rigetti.txt        128                 809                      659                      617                      617                      
+16CNOT4_3.txt             adj_16_Rigetti.txt        4                   40                       37                       37                       37                       
+16CNOT4_2.txt             adj_16_Rigetti.txt        4                   28                       31                       31                       31                       
+16CNOT128_7.txt           adj_16_Rigetti.txt        128                 800                      696                      627                      627                      
+16CNOT128_5.txt           adj_16_Rigetti.txt        128                 800                      646                      620                      620                      
+16CNOT4_1.txt             adj_16_Rigetti.txt        4                   37                       37                       37                       37                       
+16CNOT128_4.txt           adj_16_Rigetti.txt        128                 806                      687                      610                      610                      
+16CNOT64_7.txt            adj_16_Rigetti.txt        64                  409                      355                      331                      331                      
+16CNOT256_5.txt           adj_16_Rigetti.txt        256                 1717                     1383                     1287                     1287                     
+16CNOT256_4.txt           adj_16_Rigetti.txt        256                 1570                     1357                     1256                     1254                     
+16CNOT64_6.txt            adj_16_Rigetti.txt        64                  409                      323                      309                      309                      
+16CNOT64_4.txt            adj_16_Rigetti.txt        64                  418                      327                      313                      313                      
+16CNOT256_6.txt           adj_16_Rigetti.txt        256                 1579                     1361                     1239                     1239                     
+16CNOT256_7.txt           adj_16_Rigetti.txt        256                 1771                     1364                     1301                     1301                     
+16CNOT64_5.txt            adj_16_Rigetti.txt        64                  433                      349                      325                      323                      
+16CNOT64_1.txt            adj_16_Rigetti.txt        64                  424                      361                      341                      341                      
+16CNOT256_3.txt           adj_16_Rigetti.txt        256                 1666                     1401                     1301                     1301                     
+16CNOT256_2.txt           adj_16_Rigetti.txt        256                 1675                     1325                     1239                     1239                     
+16CNOT32_8.txt            adj_16_Rigetti.txt        32                  191                      197                      181                      181                      
+16CNOT64_2.txt            adj_16_Rigetti.txt        64                  397                      325                      309                      309                      
+16CNOT64_10.txt           adj_16_Rigetti.txt        64                  382                      358                      340                      340                      
+16CNOT16_9.txt            adj_16_Rigetti.txt        16                  112                      82                       80                       80                       
+16CNOT256_1.txt           adj_16_Rigetti.txt        256                 1702                     1366                     1269                     1269                     
+16CNOT16_8.txt            adj_16_Rigetti.txt        16                  103                      85                       85                       85                       
+16CNOT64_3.txt            adj_16_Rigetti.txt        64                  397                      334                      309                      309                      
+16CNOT32_9.txt            adj_16_Rigetti.txt        32                  173                      146                      143                      143                      
 
-Java con meno CNOT di Qiskit: 5/70
+
+====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======
+Overhead medio con 4 CNOT: 620.00%
+Overhead medio con 8 CNOT: 513.12%
+Overhead medio con 16 CNOT: 448.91%
+Overhead medio con 32 CNOT: 461.88%
+Overhead medio con 64 CNOT: 448.05%
+Overhead medio con 128 CNOT: 432.58%
+Overhead medio con 256 CNOT: 440.37%

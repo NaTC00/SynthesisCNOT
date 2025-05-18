@@ -7,6 +7,7 @@ from sklearn import datasets
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import normalize
 from qiskit.visualization import circuit_drawer
+from collections import defaultdict
 from circuit_utils import (
     FFQRAM,
     create_circuit_from_file,
@@ -40,8 +41,6 @@ def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath
         qc_original = create_circuit_from_simple_file(filepath_input)
         create_file_from_circuit(qc_original, filepath_input, ['CNOT', 'H', 'S', 'S+', 'T', 'T+', 'X', 'Y', 'Z'])
 
-    if(filepath_input == "./Input/16CNOT/16CNOT32_4.txt"):
-        qc_original.draw(output="mpl", scale=0.3)
    
     if choice == "2":
         qc_original = QuantumCircuit(circuit.num_qubits)
@@ -54,7 +53,7 @@ def process_circuit_file(filepath_input, filepath_output, filepath_adj, filepath
   
         qc_transpiled = transpile(
         qc_original,
-        basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z'],
+        basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u'],
         coupling_map=coupling_map,
         layout_method="trivial",
         seed_transpiler=123,
@@ -86,16 +85,43 @@ def java_better_stats(results):
     return better, len(results)
 
 def save_results_traspiler(results, results_file):
+    overhead_by_cnot_original = defaultdict(list)
     with open(results_file, "w") as f:
-        f.write(f"{'File Input':<25} {'Matrice Adiacenza':<25} {'CNOT Originale':<15} {'CNOT Qiskit_Level0':<15} {'CNOT Qiskit_Level1':<15} {'CNOT Qiskit_Level2':<20} {'CNOT Qiskit_Level3':<20}\n")
-        f.write("=" * 140 + "\n")
+        # Intestazione della tabella
+        f.write(f"{'File Input':<25} {'Matrice Adiacenza':<25} {'CNOT Originale':<20} {'CNOT Qiskit_Level0':<25} {'CNOT Qiskit_Level1':<25} {'CNOT Qiskit_Level2':<25} {'CNOT Qiskit_Level3':<25}\n")
+        f.write("=" * 170 + "\n")
+        
+        # Scrittura dei dati
         for row in results:
-            f.write(f"{row[0]:<25} {row[1]:<25} {row[2]:<20}")
-            for num_cnot in row[3]:
-                  f.write(f"{num_cnot}:<25")
+            file_input = row[0]
+            adj = row[1]
+            cont_original = row[2]
+            cnot_levels = row[3]
+            f.write(f"{file_input:<25} {adj:<25} {cont_original:<20}")
+            for num_cnot in cnot_levels:
+                f.write(f"{num_cnot:<25}")
             f.write("\n")
-        # ---------- riepilogo finale ----------
-        f.write("\n")
+
+            # Calcolo della media dei CNOT finali dei livelli di ottimizzazione di qiskit
+            avg_final_count = sum(cnot_levels) / len(cnot_levels)
+
+            #calcolo overhead
+            overhead = ((avg_final_count - cont_original)/cont_original) * 100
+
+            #inserisco l'overehead nel dizionario
+            overhead_by_cnot_original[cont_original].append(overhead)
+        
+        f.write("\n\n====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======\n")
+        for cnot_original in sorted(overhead_by_cnot_original.keys()):
+
+            #recupero la lista con gli overhead raggruppati per numero di cnot
+            overhead_list = overhead_by_cnot_original[cnot_original]
+
+            #calcolo la media dell'ovrehead per quel gruppo di cnot iniziali
+            avg_overhead = sum(overhead_list) / len(overhead_list)
+            f.write(f"Overhead medio con {cnot_original} CNOT: {avg_overhead:.2f}%\n")
+        
+
 
 def save_results(results, results_file):
     java_better, total = java_better_stats(results)

@@ -1,0 +1,60 @@
+File Input                Matrice Adiacenza         CNOT Originale       CNOT Qiskit_Level0        CNOT Qiskit_Level1        CNOT Qiskit_Level2        CNOT Qiskit_Level3       
+==========================================================================================================================================================================
+9CNOT10_8.txt             adj_9_square.txt          10                  31                       25                       25                       25                       
+9CNOT10_9.txt             adj_9_square.txt          10                  37                       28                       28                       28                       
+9CNOT20_10.txt            adj_9_square.txt          20                  56                       47                       45                       45                       
+9CNOT30_10.txt            adj_9_square.txt          30                  96                       72                       71                       71                       
+9CNOT30_8.txt             adj_9_square.txt          30                  84                       79                       75                       75                       
+9CNOT30_9.txt             adj_9_square.txt          30                  81                       93                       85                       85                       
+9CNOT3_4.txt              adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT5_2.txt              adj_9_square.txt          5                   14                       11                       11                       11                       
+9CNOT10_10.txt            adj_9_square.txt          10                  25                       25                       25                       25                       
+9CNOT20_6.txt             adj_9_square.txt          20                  62                       56                       55                       55                       
+9CNOT20_7.txt             adj_9_square.txt          20                  47                       44                       42                       42                       
+9CNOT5_3.txt              adj_9_square.txt          5                   14                       12                       12                       12                       
+9CNOT3_5.txt              adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT3_7.txt              adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT5_1.txt              adj_9_square.txt          5                   14                       14                       14                       14                       
+9CNOT20_5.txt             adj_9_square.txt          20                  74                       59                       57                       57                       
+9CNOT20_4.txt             adj_9_square.txt          20                  56                       50                       46                       46                       
+9CNOT3_6.txt              adj_9_square.txt          3                   6                        6                        6                        6                        
+9CNOT3_2.txt              adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT5_4.txt              adj_9_square.txt          5                   17                       14                       14                       14                       
+9CNOT20_1.txt             adj_9_square.txt          20                  32                       32                       26                       26                       
+9CNOT5_5.txt              adj_9_square.txt          5                   14                       11                       11                       11                       
+9CNOT3_3.txt              adj_9_square.txt          3                   12                       10                       10                       10                       
+9CNOT3_1.txt              adj_9_square.txt          3                   12                       9                        9                        9                        
+9CNOT5_7.txt              adj_9_square.txt          5                   23                       20                       18                       18                       
+9CNOT20_3.txt             adj_9_square.txt          20                  62                       47                       47                       47                       
+9CNOT20_2.txt             adj_9_square.txt          20                  59                       44                       42                       42                       
+9CNOT5_6.txt              adj_9_square.txt          5                   17                       17                       17                       17                       
+9CNOT3_10.txt             adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT5_8.txt              adj_9_square.txt          5                   20                       20                       20                       20                       
+9CNOT5_9.txt              adj_9_square.txt          5                   17                       17                       17                       17                       
+9CNOT20_9.txt             adj_9_square.txt          20                  59                       47                       37                       37                       
+9CNOT20_8.txt             adj_9_square.txt          20                  65                       53                       49                       49                       
+9CNOT3_8.txt              adj_9_square.txt          3                   9                        9                        9                        9                        
+9CNOT3_9.txt              adj_9_square.txt          3                   3                        3                        3                        3                        
+9CNOT30_4.txt             adj_9_square.txt          30                  78                       69                       73                       73                       
+9CNOT10_1.txt             adj_9_square.txt          10                  37                       34                       32                       32                       
+9CNOT30_5.txt             adj_9_square.txt          30                  105                      90                       82                       82                       
+9CNOT30_7.txt             adj_9_square.txt          30                  105                      90                       74                       74                       
+9CNOT5_10.txt             adj_9_square.txt          5                   17                       17                       17                       17                       
+9CNOT10_2.txt             adj_9_square.txt          10                  28                       28                       23                       23                       
+9CNOT10_3.txt             adj_9_square.txt          10                  31                       25                       23                       23                       
+9CNOT30_6.txt             adj_9_square.txt          30                  90                       69                       69                       69                       
+9CNOT30_2.txt             adj_9_square.txt          30                  90                       84                       84                       84                       
+9CNOT10_7.txt             adj_9_square.txt          10                  37                       25                       25                       25                       
+9CNOT10_6.txt             adj_9_square.txt          10                  25                       31                       31                       31                       
+9CNOT30_3.txt             adj_9_square.txt          30                  84                       76                       72                       72                       
+9CNOT30_1.txt             adj_9_square.txt          30                  93                       75                       77                       77                       
+9CNOT10_4.txt             adj_9_square.txt          10                  28                       28                       28                       28                       
+9CNOT10_5.txt             adj_9_square.txt          10                  22                       25                       25                       25                       
+
+
+====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======
+Overhead medio con 3 CNOT: 177.50%
+Overhead medio con 5 CNOT: 211.00%
+Overhead medio con 10 CNOT: 176.25%
+Overhead medio con 20 CNOT: 142.88%
+Overhead medio con 30 CNOT: 168.92%
