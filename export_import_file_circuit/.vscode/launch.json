@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Python: quantum_converter",
             "type": "debugpy",
@@ -17,15 +16,7 @@
                 "./Input/20CNOT",
                 "./Output/20CNOT",
                 "./Results/20CNOT"
-                
             ]
-            /*"args": [
-                "./Adj/adj_4_1.txt",
-                "../cnotsynth-Java/cnotsynth.jar",
-                "./FQRAM/Input",
-                "./FQRAM/Output",
-                "./FQRAM/Results"
-            ]*/
         }
     ]
 }

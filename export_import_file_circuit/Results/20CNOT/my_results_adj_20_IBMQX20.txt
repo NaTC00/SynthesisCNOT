@@ -2,81 +2,81 @@ File Input                Matrice Adiacenza         CNOT Originale       CNOT Qi
 ==========================================================================================================================================================================
 20CNOT4_3.txt             adj_20_IBMQX20.txt        4                   19                       19                       19                       19                       
 20CNOT4_2.txt             adj_20_IBMQX20.txt        4                   10                       10                       10                       10                       
-20CNOT8_10.txt            adj_20_IBMQX20.txt        8                   35                       29                       29                       29                       
-20CNOT4_10.txt            adj_20_IBMQX20.txt        4                   16                       16                       16                       16                       
+20CNOT8_10.txt            adj_20_IBMQX20.txt        8                   32                       29                       29                       29                       
+20CNOT4_10.txt            adj_20_IBMQX20.txt        4                   16                       16                       14                       14                       
 20CNOT4_1.txt             adj_20_IBMQX20.txt        4                   10                       10                       8                        8                        
-20CNOT256_8.txt           adj_20_IBMQX20.txt        256                 1039                     791                      765                      765                      
-20CNOT8_8.txt             adj_20_IBMQX20.txt        8                   35                       35                       35                       35                       
+20CNOT256_8.txt           adj_20_IBMQX20.txt        256                 1018                     822                      771                      771                      
+20CNOT8_8.txt             adj_20_IBMQX20.txt        8                   41                       35                       35                       35                       
 20CNOT4_5.txt             adj_20_IBMQX20.txt        4                   16                       16                       16                       16                       
 20CNOT4_4.txt             adj_20_IBMQX20.txt        4                   22                       22                       20                       20                       
-20CNOT8_9.txt             adj_20_IBMQX20.txt        8                   29                       27                       27                       27                       
-20CNOT256_9.txt           adj_20_IBMQX20.txt        256                 1045                     837                      778                      778                      
+20CNOT8_9.txt             adj_20_IBMQX20.txt        8                   35                       27                       27                       27                       
+20CNOT256_9.txt           adj_20_IBMQX20.txt        256                 1027                     836                      772                      772                      
 20CNOT4_6.txt             adj_20_IBMQX20.txt        4                   19                       22                       22                       22                       
-20CNOT4_7.txt             adj_20_IBMQX20.txt        4                   19                       19                       17                       17                       
-20CNOT16_10.txt           adj_20_IBMQX20.txt        16                  67                       61                       58                       58                       
-20CNOT64_7.txt            adj_20_IBMQX20.txt        64                  250                      205                      194                      194                      
-20CNOT64_6.txt            adj_20_IBMQX20.txt        64                  274                      209                      201                      201                      
-20CNOT32_10.txt           adj_20_IBMQX20.txt        32                  101                      89                       84                       84                       
-20CNOT128_8.txt           adj_20_IBMQX20.txt        128                 539                      419                      411                      411                      
-20CNOT64_4.txt            adj_20_IBMQX20.txt        64                  259                      202                      195                      195                      
-20CNOT64_5.txt            adj_20_IBMQX20.txt        64                  250                      211                      199                      199                      
-20CNOT128_9.txt           adj_20_IBMQX20.txt        128                 521                      422                      378                      378                      
-20CNOT64_1.txt            adj_20_IBMQX20.txt        64                  247                      205                      191                      191                      
-20CNOT16_9.txt            adj_20_IBMQX20.txt        16                  61                       56                       52                       52                       
-20CNOT64_2.txt            adj_20_IBMQX20.txt        64                  241                      187                      179                      179                      
-20CNOT32_8.txt            adj_20_IBMQX20.txt        32                  146                      116                      111                      111                      
-20CNOT32_9.txt            adj_20_IBMQX20.txt        32                  131                      104                      97                       97                       
-20CNOT64_3.txt            adj_20_IBMQX20.txt        64                  259                      223                      217                      217                      
-20CNOT16_8.txt            adj_20_IBMQX20.txt        16                  43                       43                       41                       41                       
-20CNOT128_2.txt           adj_20_IBMQX20.txt        128                 488                      402                      376                      376                      
-20CNOT16_5.txt            adj_20_IBMQX20.txt        16                  70                       61                       61                       61                       
-20CNOT32_4.txt            adj_20_IBMQX20.txt        32                  116                      92                       83                       83                       
-20CNOT32_5.txt            adj_20_IBMQX20.txt        32                  113                      107                      101                      101                      
-20CNOT16_4.txt            adj_20_IBMQX20.txt        16                  61                       56                       55                       55                       
-20CNOT128_3.txt           adj_20_IBMQX20.txt        128                 497                      417                      378                      378                      
-20CNOT128_1.txt           adj_20_IBMQX20.txt        128                 503                      399                      379                      379                      
-20CNOT16_6.txt            adj_20_IBMQX20.txt        16                  49                       46                       44                       44                       
-20CNOT32_7.txt            adj_20_IBMQX20.txt        32                  125                      107                      105                      105                      
-20CNOT32_6.txt            adj_20_IBMQX20.txt        32                  113                      92                       89                       89                       
-20CNOT16_7.txt            adj_20_IBMQX20.txt        16                  61                       49                       49                       49                       
-20CNOT128_4.txt           adj_20_IBMQX20.txt        128                 488                      378                      370                      370                      
+20CNOT4_7.txt             adj_20_IBMQX20.txt        4                   19                       19                       19                       19                       
+20CNOT16_10.txt           adj_20_IBMQX20.txt        16                  67                       58                       58                       58                       
+20CNOT64_7.txt            adj_20_IBMQX20.txt        64                  229                      205                      199                      199                      
+20CNOT64_6.txt            adj_20_IBMQX20.txt        64                  247                      209                      197                      197                      
+20CNOT32_10.txt           adj_20_IBMQX20.txt        32                  92                       89                       82                       82                       
+20CNOT128_8.txt           adj_20_IBMQX20.txt        128                 512                      416                      408                      408                      
+20CNOT64_4.txt            adj_20_IBMQX20.txt        64                  256                      205                      195                      195                      
+20CNOT64_5.txt            adj_20_IBMQX20.txt        64                  244                      205                      188                      188                      
+20CNOT128_9.txt           adj_20_IBMQX20.txt        128                 482                      401                      380                      380                      
+20CNOT64_1.txt            adj_20_IBMQX20.txt        64                  235                      205                      191                      191                      
+20CNOT16_9.txt            adj_20_IBMQX20.txt        16                  61                       52                       52                       52                       
+20CNOT64_2.txt            adj_20_IBMQX20.txt        64                  226                      187                      176                      176                      
+20CNOT32_8.txt            adj_20_IBMQX20.txt        32                  140                      122                      113                      113                      
+20CNOT32_9.txt            adj_20_IBMQX20.txt        32                  119                      104                      99                       99                       
+20CNOT64_3.txt            adj_20_IBMQX20.txt        64                  256                      235                      212                      212                      
+20CNOT16_8.txt            adj_20_IBMQX20.txt        16                  49                       43                       43                       43                       
+20CNOT128_2.txt           adj_20_IBMQX20.txt        128                 470                      396                      374                      374                      
+20CNOT16_5.txt            adj_20_IBMQX20.txt        16                  73                       61                       61                       61                       
+20CNOT32_4.txt            adj_20_IBMQX20.txt        32                  110                      92                       84                       84                       
+20CNOT32_5.txt            adj_20_IBMQX20.txt        32                  110                      107                      99                       99                       
+20CNOT16_4.txt            adj_20_IBMQX20.txt        16                  61                       55                       55                       55                       
+20CNOT128_3.txt           adj_20_IBMQX20.txt        128                 524                      408                      373                      373                      
+20CNOT128_1.txt           adj_20_IBMQX20.txt        128                 500                      396                      367                      367                      
+20CNOT16_6.txt            adj_20_IBMQX20.txt        16                  46                       46                       46                       46                       
+20CNOT32_7.txt            adj_20_IBMQX20.txt        32                  128                      107                      105                      105                      
+20CNOT32_6.txt            adj_20_IBMQX20.txt        32                  113                      95                       90                       90                       
+20CNOT16_7.txt            adj_20_IBMQX20.txt        16                  64                       58                       55                       55                       
+20CNOT128_4.txt           adj_20_IBMQX20.txt        128                 473                      382                      372                      372                      
 20CNOT16_3.txt            adj_20_IBMQX20.txt        16                  70                       55                       55                       55                       
-20CNOT64_8.txt            adj_20_IBMQX20.txt        64                  268                      208                      199                      199                      
-20CNOT32_2.txt            adj_20_IBMQX20.txt        32                  131                      104                      94                       94                       
-20CNOT32_3.txt            adj_20_IBMQX20.txt        32                  125                      107                      98                       98                       
-20CNOT64_9.txt            adj_20_IBMQX20.txt        64                  244                      220                      203                      203                      
-20CNOT16_2.txt            adj_20_IBMQX20.txt        16                  49                       46                       42                       42                       
-20CNOT128_5.txt           adj_20_IBMQX20.txt        128                 500                      387                      378                      378                      
-20CNOT128_7.txt           adj_20_IBMQX20.txt        128                 494                      407                      395                      395                      
-20CNOT32_1.txt            adj_20_IBMQX20.txt        32                  143                      128                      115                      115                      
-20CNOT16_1.txt            adj_20_IBMQX20.txt        16                  55                       55                       55                       55                       
-20CNOT128_6.txt           adj_20_IBMQX20.txt        128                 521                      392                      377                      377                      
-20CNOT256_10.txt          adj_20_IBMQX20.txt        256                 979                      787                      743                      743                      
-20CNOT256_7.txt           adj_20_IBMQX20.txt        256                 1021                     817                      781                      781                      
+20CNOT64_8.txt            adj_20_IBMQX20.txt        64                  271                      208                      201                      201                      
+20CNOT32_2.txt            adj_20_IBMQX20.txt        32                  125                      104                      102                      102                      
+20CNOT32_3.txt            adj_20_IBMQX20.txt        32                  125                      110                      98                       98                       
+20CNOT64_9.txt            adj_20_IBMQX20.txt        64                  235                      214                      195                      195                      
+20CNOT16_2.txt            adj_20_IBMQX20.txt        16                  55                       46                       42                       42                       
+20CNOT128_5.txt           adj_20_IBMQX20.txt        128                 503                      399                      379                      379                      
+20CNOT128_7.txt           adj_20_IBMQX20.txt        128                 506                      419                      404                      404                      
+20CNOT32_1.txt            adj_20_IBMQX20.txt        32                  149                      119                      117                      117                      
+20CNOT16_1.txt            adj_20_IBMQX20.txt        16                  58                       55                       55                       55                       
+20CNOT128_6.txt           adj_20_IBMQX20.txt        128                 452                      408                      386                      386                      
+20CNOT256_10.txt          adj_20_IBMQX20.txt        256                 934                      802                      743                      743                      
+20CNOT256_7.txt           adj_20_IBMQX20.txt        256                 1000                     808                      785                      785                      
 20CNOT8_7.txt             adj_20_IBMQX20.txt        8                   32                       26                       26                       26                       
-20CNOT8_6.txt             adj_20_IBMQX20.txt        8                   32                       26                       26                       26                       
-20CNOT256_6.txt           adj_20_IBMQX20.txt        256                 958                      826                      782                      782                      
-20CNOT256_4.txt           adj_20_IBMQX20.txt        256                 1003                     836                      785                      785                      
-20CNOT8_4.txt             adj_20_IBMQX20.txt        8                   35                       32                       32                       32                       
+20CNOT8_6.txt             adj_20_IBMQX20.txt        8                   26                       26                       26                       26                       
+20CNOT256_6.txt           adj_20_IBMQX20.txt        256                 1012                     814                      747                      747                      
+20CNOT256_4.txt           adj_20_IBMQX20.txt        256                 1000                     827                      790                      790                      
+20CNOT8_4.txt             adj_20_IBMQX20.txt        8                   35                       35                       32                       32                       
 20CNOT4_9.txt             adj_20_IBMQX20.txt        4                   19                       19                       19                       19                       
 20CNOT4_8.txt             adj_20_IBMQX20.txt        4                   16                       16                       14                       14                       
-20CNOT8_5.txt             adj_20_IBMQX20.txt        8                   29                       26                       26                       26                       
-20CNOT256_5.txt           adj_20_IBMQX20.txt        256                 991                      826                      791                      791                      
-20CNOT128_10.txt          adj_20_IBMQX20.txt        128                 509                      414                      392                      392                      
-20CNOT256_1.txt           adj_20_IBMQX20.txt        256                 1036                     839                      797                      797                      
+20CNOT8_5.txt             adj_20_IBMQX20.txt        8                   32                       26                       26                       26                       
+20CNOT256_5.txt           adj_20_IBMQX20.txt        256                 1054                     844                      768                      768                      
+20CNOT128_10.txt          adj_20_IBMQX20.txt        128                 518                      401                      390                      390                      
+20CNOT256_1.txt           adj_20_IBMQX20.txt        256                 1018                     857                      806                      806                      
 20CNOT8_1.txt             adj_20_IBMQX20.txt        8                   38                       35                       35                       35                       
-20CNOT64_10.txt           adj_20_IBMQX20.txt        64                  244                      194                      191                      191                      
-20CNOT256_2.txt           adj_20_IBMQX20.txt        256                 1018                     820                      756                      756                      
-20CNOT8_2.txt             adj_20_IBMQX20.txt        8                   35                       38                       35                       35                       
-20CNOT8_3.txt             adj_20_IBMQX20.txt        8                   35                       32                       32                       32                       
-20CNOT256_3.txt           adj_20_IBMQX20.txt        256                 1015                     794                      767                      767                      
+20CNOT64_10.txt           adj_20_IBMQX20.txt        64                  253                      199                      191                      191                      
+20CNOT256_2.txt           adj_20_IBMQX20.txt        256                 1021                     785                      771                      771                      
+20CNOT8_2.txt             adj_20_IBMQX20.txt        8                   35                       35                       35                       35                       
+20CNOT8_3.txt             adj_20_IBMQX20.txt        8                   29                       32                       32                       32                       
+20CNOT256_3.txt           adj_20_IBMQX20.txt        256                 955                      803                      772                      772                      
 
 
 ====== Overhead Medio per CNOT Originale (sulla media dei livelli 0-3) ======
 Overhead medio con 4 CNOT: 310.62%
 Overhead medio con 8 CNOT: 289.69%
-Overhead medio con 16 CNOT: 234.06%
-Overhead medio con 32 CNOT: 231.56%
-Overhead medio con 64 CNOT: 233.52%
-Overhead medio con 128 CNOT: 227.44%
-Overhead medio con 256 CNOT: 229.77%
+Overhead medio con 16 CNOT: 240.16%
+Overhead medio con 32 CNOT: 231.09%
+Overhead medio con 64 CNOT: 228.67%
+Overhead medio con 128 CNOT: 224.84%
+Overhead medio con 256 CNOT: 228.97%
