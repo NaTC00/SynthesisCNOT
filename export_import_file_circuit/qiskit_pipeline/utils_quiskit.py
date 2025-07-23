@@ -185,35 +185,44 @@ def get_statevector(circuit):
     return statevector
 
 def indexing(circuit, Qregister, index):
-    size = Qregister.size
-    xored = index ^ (pow(2, size) - 1)
+    size = Qregister.size # numero di qubit nel registro
+
+    xored = index ^ (pow(2, size) - 1) # XOR tra index e 111..1 quindi porta a 0 i bit a 1
     j=1
-    for k in (2**p for p in range(0, size)):
-        if xored & k >= j:
-            circuit.x(Qregister[j-1])
+    for k in (2**p for p in range(0, size)): # itera sulle potenze di 2 fino a size (le potenze di 2 contengono solo un 1)
+        if xored & k >= j: # xored & k restituisce: k se il bit p in xored è 1; 0 se quel bit è 0
+            circuit.x(Qregister[j-1]) #esegue il flip
         j = j+1
         
 def FFQRAM(data):
     
-    N, M = data.shape
+    # data: matrice N x M
+
+    N, M = data.shape # N: numero di righe (N pattern), M: numero di colonne (M features) 
     
-    row_index = QuantumRegister(np.ceil(np.log2(N)))
-    col_index = QuantumRegister(np.ceil(np.log2(M)))
-    r = QuantumRegister(1)
+    row_index = QuantumRegister(np.ceil(np.log2(N))) # Qubit di indirizzo per le righe
+    col_index = QuantumRegister(np.ceil(np.log2(M))) # Qubit di indirizzo per le colonne
+
+    r = QuantumRegister(1) # Qubit ausiliario dove andranno le ampiezze 
+
     qc = QuantumCircuit(row_index, col_index, r)
     
+    # Metto i qubit di indirizzo in sovrapposizione
     qc.h(row_index)
     qc.h(col_index)
     
+    # Ciclo su tutti i pattern
     for i in range(N):
+
+        # vettore con le M features
         vector = data[i]
 
-        indexing(qc, row_index, i)
+        indexing(qc, row_index, i) #bit-flip da bit classici sul pattern i
         
         for j in range(len(vector)): 
-            indexing(qc, col_index, j)
+            indexing(qc, col_index, j) # FLIP (trasforma pattern j in tutti 1)
             qc.append(MCMTGate(RYGate(2*np.arcsin(vector[j])), len(row_index[:]+col_index[:]), 1), row_index[:]+col_index[:]+r[0:])
-            indexing(qc, col_index, j)
+            indexing(qc, col_index, j) # FLOP (inverte il flip -> riporta al pattern j)
             #qc.barrier()
 
         indexing(qc, row_index, i)

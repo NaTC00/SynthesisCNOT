@@ -1,4 +1,4 @@
-#!/Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/venv_pytket/bin/python3.11
+#!/Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/tket_pipeline/venv_pytket/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

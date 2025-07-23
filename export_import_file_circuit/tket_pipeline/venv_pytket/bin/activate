@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/venv_pytket
+VIRTUAL_ENV=/Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/tket_pipeline/venv_pytket
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

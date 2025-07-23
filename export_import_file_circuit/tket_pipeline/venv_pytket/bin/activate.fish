@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/venv_pytket
+set -gx VIRTUAL_ENV /Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/tket_pipeline/venv_pytket
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

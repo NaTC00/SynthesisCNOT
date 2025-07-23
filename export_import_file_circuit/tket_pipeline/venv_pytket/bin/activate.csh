@@ -8,7 +8,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV /Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/venv_pytket
+setenv VIRTUAL_ENV /Users/nataliaceccarini/SynthesisCNOT/export_import_file_circuit/tket_pipeline/venv_pytket
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/"bin":$PATH"
