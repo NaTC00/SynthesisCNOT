@@ -11,6 +11,8 @@ from qiskit.circuit.library import MCMTGate, RYGate, RZGate, CRYGate, XGate
 from qiskit.visualization import plot_bloch_vector, plot_bloch_multivector, plot_histogram
 from qiskit.synthesis import generate_basic_approximations
 from qiskit.transpiler.passes import SolovayKitaev
+import numpy as np
+from sklearn.preprocessing import normalize
 
 #crea il circuito dal file contente le porte   
 def create_circuit_from_file(filename: str) -> QuantumCircuit:
@@ -184,6 +186,20 @@ def get_statevector(circuit):
     statevector = result.get_statevector()
     return statevector
 
+def generate_normalized_dataset(n_rows, n_cols, seed=42):
+
+    # Imposta il seme del generatore di numeri casuali (così la matrice generata sarà sempre la stessa ogni volta che esegui il codice con lo stesso seed)
+    np.random.seed(seed)
+
+    # Genera una matrice n_rows x n_cols
+    # I valori sono numeri reali casuali distribuiti uniformemente tra 0 e 1
+    data = np.random.rand(n_rows, n_cols)
+
+    # Applica normalizzazione L2 sulle righe
+    data_normalized = normalize(data, norm='l2')
+    return data_normalized
+
+
 def indexing(circuit, Qregister, index):
     size = Qregister.size # numero di qubit nel registro
 
@@ -200,8 +216,9 @@ def FFQRAM(data):
 
     N, M = data.shape # N: numero di righe (N pattern), M: numero di colonne (M features) 
     
-    row_index = QuantumRegister(np.ceil(np.log2(N))) # Qubit di indirizzo per le righe
-    col_index = QuantumRegister(np.ceil(np.log2(M))) # Qubit di indirizzo per le colonne
+    row_index = QuantumRegister(int(np.ceil(np.log2(N))), name="row_index") # Qubit di indirizzo per le righe
+
+    col_index = QuantumRegister(int(np.ceil(np.log2(M))), name="col_index") # Qubit di indirizzo per le colonne
 
     r = QuantumRegister(1) # Qubit ausiliario dove andranno le ampiezze 
 
@@ -229,7 +246,7 @@ def FFQRAM(data):
 
         #qc.barrier()
         
-    return qc 
+    return qc.decompose(reps=10) 
 
 def qasm_to_clifford_and_t(qc, basic_approx_depth=10):
     qc = transpile(qc,basis_gates=["cx","u3"]) # You should transpile first to cx and u3, so it will deal with 2Q gates
