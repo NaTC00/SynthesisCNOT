@@ -8,7 +8,9 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import normalize
 from qiskit.visualization import circuit_drawer
 import csv
+import networkx as nx
 from collections import defaultdict
+from qiskit.quantum_info import Statevector, state_fidelity, Statevector, DensityMatrix, entropy
 
 from utils_quiskit import (
     FFQRAM,
@@ -37,6 +39,9 @@ def check_input_files(file):
     if not os.path.isfile(file):
         sys.exit(f"Errore: file non è stato trovato: {file}")
 
+def check_input_folder(folder):
+    if not os.path.isdir(folder):
+        sys.exit(f"Errore: cartella non trovata: {folder}")
 
 def process_circuit(qc_original, coupling_map, include_file_input=True):
 
@@ -49,7 +54,7 @@ def process_circuit(qc_original, coupling_map, include_file_input=True):
         if include_file_input:
             qc_transpiled = transpile(
                 qc_original,
-                basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u'],
+                basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z'],
                 coupling_map=coupling_map,
                 layout_method="trivial",
                 seed_transpiler=123,
@@ -58,12 +63,14 @@ def process_circuit(qc_original, coupling_map, include_file_input=True):
         else:
             qc_transpiled = transpile(
                 qc_original,
+                basis_gates=['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u'],
                 coupling_map=coupling_map,
                 layout_method="trivial",
                 seed_transpiler=123,
                 optimization_level=i
             )
             print(count_cx_gates(qc_transpiled))
+        print(f"traspilato circuito livello {i}")
         transpiler_result.append(qc_transpiled)
     
     for qc_transpiled in transpiler_result:
@@ -103,7 +110,7 @@ def save_results_traspiler(results, results_file, include_file_input=True):
         "CNOT Qiskit_Level1",   # Idem per livello 1
         "CNOT Qiskit_Level2",   # Idem per livello 2
         "CNOT Qiskit_Level3",   # Idem per livello 3
-        "Overhead (%)"          # Overhead percentuale medio rispetto al circuito originale
+        "Overhead (%)"         # Overhead percentuale medio rispetto al circuito originale
     ]
     
     # Lista temporanea dove accumuliamo tutte le righe da scrivere nel CSV
@@ -115,8 +122,8 @@ def save_results_traspiler(results, results_file, include_file_input=True):
         if include_file_input:
             file_input = row[0]
             adj = row[1]
-            cont_original = row[2]
-            cnot_levels = row[3]
+            cont_original = row[2][0]
+            cnot_levels = row[2][1]
         else:
             file_input = None
             adj = row[0]
@@ -189,20 +196,29 @@ def transpile_and_evaluate_random_circuits(filepath_adj, folder_input, folder_re
     for filename in os.listdir(folder_input):
         filepath_input = os.path.join(folder_input, filename)
         if not filename.endswith(".txt"):
+            print("file ignored")
             continue  # Ignora file non di testo
 
         filepath_input = os.path.join(folder_input, filename)
 
-    
+        print(os.path.basename(filepath_input))
+      
         result =process_circuit(
             create_circuit_from_simple_file(filepath_input),
             coupling_map
         )
-    
-        results.append(os.path.basename(filepath_input), os.path.basename(filepath_adj), result)
+        #entropy = von_neumann_entropy(circuit)
+        results.append((
+        os.path.basename(filepath_input),
+        os.path.basename(filepath_adj),
+        result
+        ))
+
+       
+
        
     adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
-    results_file = os.path.join(folder_results, f"my_results_{adj_name}.csv")
+    results_file = os.path.join(folder_results, f"results_{adj_name}.csv")
     save_results_traspiler(results, results_file)
 
     print(f"Processo completato! Risultati salvati in {results_file}")
@@ -214,6 +230,7 @@ def transpile_and_evaluate_ffqram_circuit(filepath_adj, qc_ffqram, folder_result
             coupling_map,
             False
         )
+    #entropy = von_neumann_entropy(qc_ffqram)
     results.append((os.path.basename(filepath_adj), num_cnot_qc_original, num_cnot_qc_trnspiled))
     results_file = os.path.join(folder_results, f"ffqram_results.csv")
     save_results_traspiler(results, results_file, include_file_input=False)
@@ -270,6 +287,18 @@ def load_and_preprocess_data():
     return df.to_numpy()
 
 
+def von_neumann_entropy(circuit: QuantumCircuit) -> float:
+    # Step 1: recupero lo state vector dal circuito
+    state = Statevector.from_instruction(circuit)
+    
+    # Step 2: converto lo state vector nella matrice densità
+    rho = DensityMatrix(state)
+    
+    # Step 3: calcolo l'entropia
+    return entropy(rho)
+    
+
+
 def main():
 
     if len(sys.argv) != 3:
@@ -292,9 +321,9 @@ def main():
 
     if choice == '1':
         
-        folder_input = input("Inserisci il path della cartella contenente i circuiti .qasm: ").strip()
+        folder_input = input("Inserisci il path della cartella contenente i circuiti: ").strip()
         
-        check_input_files(folder_input)
+        check_input_folder(folder_input)
 
         transpile_and_evaluate_random_circuits(
             filepath_adj, folder_input, folder_results, coupling_map
