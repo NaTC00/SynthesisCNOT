@@ -14,6 +14,8 @@ from qiskit.transpiler.passes import SolovayKitaev
 import numpy as np
 from sklearn.preprocessing import normalize
 
+
+
 #crea il circuito dal file contente le porte   
 def create_circuit_from_file(filename: str) -> QuantumCircuit:
     with open(filename, 'r') as f:
@@ -246,7 +248,7 @@ def FFQRAM(data):
 
         #qc.barrier()
         
-    return qc.decompose(reps=10) 
+    return qc#.decompose(reps=10) 
 
 def qasm_to_clifford_and_t(qc, basic_approx_depth=10):
     qc = transpile(qc,basis_gates=["cx","u3"]) # You should transpile first to cx and u3, so it will deal with 2Q gates

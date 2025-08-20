@@ -45,9 +45,9 @@ def check_input_folder(folder):
 
 def process_circuit(qc_original, coupling_map, include_file_input=True):
 
-
     transpiler_result = []
     num_cnot_list = []
+    entropy_list = []
 
     for i in range(4):
   
@@ -68,10 +68,10 @@ def process_circuit(qc_original, coupling_map, include_file_input=True):
                 layout_method="trivial",
                 seed_transpiler=123,
                 optimization_level=i
-            )
-            print(count_cx_gates(qc_transpiled))
-        print(f"traspilato circuito livello {i}")
+            )    
+        print(f"traspilato circuito livello {i} entropia: {von_neumann_entropy(qc_transpiled)}")
         transpiler_result.append(qc_transpiled)
+        entropy_list.append(von_neumann_entropy(qc_transpiled))
     
     for qc_transpiled in transpiler_result:
         num_cnot = count_cx_gates(qc_transpiled)
@@ -86,8 +86,11 @@ def process_circuit(qc_original, coupling_map, include_file_input=True):
 
     return (
         num_cnot_qc_original,
-        num_cnot_list   
+        num_cnot_list,
+        entropy_list  
     )
+
+
 
 def java_better_stats(results):
     better = sum(1 for row in results if row[4] < row[3])
@@ -96,7 +99,7 @@ def java_better_stats(results):
 
 def save_results_traspiler(results, results_file, include_file_input=True):
     # Dizionario per raggruppare gli overhead in base al numero di CNOT originali
-    overhead_by_cnot_original = defaultdict(list)
+    overhead_entropy_by_cnot_original = defaultdict(list)
 
     # Definizione delle intestazioni del file CSV, inclusa la colonna dell'overhead
     # Intestazioni CSV
@@ -110,7 +113,8 @@ def save_results_traspiler(results, results_file, include_file_input=True):
         "CNOT Qiskit_Level1",   # Idem per livello 1
         "CNOT Qiskit_Level2",   # Idem per livello 2
         "CNOT Qiskit_Level3",   # Idem per livello 3
-        "Overhead (%)"         # Overhead percentuale medio rispetto al circuito originale
+        "Overhead (%)",         # Overhead percentuale medio rispetto al circuito originale
+        "Entropia"               #Entropia media 
     ]
     
     # Lista temporanea dove accumuliamo tutte le righe da scrivere nel CSV
@@ -124,20 +128,25 @@ def save_results_traspiler(results, results_file, include_file_input=True):
             adj = row[1]
             cont_original = row[2][0]
             cnot_levels = row[2][1]
+            entropy_list = row[2][2]
         else:
             file_input = None
             adj = row[0]
-            cont_original = row[1]
-            cnot_levels = row[2]
-       
+            cont_original = row[1][0]
+            cnot_levels = row[1][1]
+            entropy_list = row[1][2]
         # Calcolo della media dei CNOT ottenuti dopo transpiling con livelli 0-3
         avg_final_count = sum(cnot_levels) / len(cnot_levels)
 
         # Calcolo dell'overhead in percentuale rispetto al circuito originale
         overhead = ((avg_final_count - cont_original) / cont_original) * 100
 
+        avg_entropy = sum(entropy_list) / len(entropy_list)
+
         # Salvataggio dell'overhead nel dizionario, raggruppato per CNOT originali
-        overhead_by_cnot_original[cont_original].append(overhead)
+        overhead_entropy_by_cnot_original[cont_original].append((overhead, avg_entropy))
+
+        
 
         # Aggiunta della riga da scrivere nel file, includendo l'overhead arrotondato a 2 decimali
         row_data = []
@@ -147,7 +156,8 @@ def save_results_traspiler(results, results_file, include_file_input=True):
             adj,
             cont_original,
             *cnot_levels,
-            round(overhead, 2)
+            round(overhead, 2),
+            avg_entropy
         ]
 
         rows_to_write.append(row_data)
@@ -169,12 +179,17 @@ def save_results_traspiler(results, results_file, include_file_input=True):
     summary_file = results_file.replace(".csv", "_summary.csv")
     with open(summary_file, mode="w", newline='') as summary_csv:
         writer = csv.writer(summary_csv)
-        writer.writerow(["CNOT Originale", "Overhead Medio (%)"])
+        writer.writerow(["CNOT Originale", "Overhead Medio (%)", "Entropia media"])
 
-        for cnot_original in sorted(overhead_by_cnot_original.keys()):
-            overhead_list = overhead_by_cnot_original[cnot_original]
-            avg_overhead = sum(overhead_list) / len(overhead_list)
-            writer.writerow([cnot_original, round(avg_overhead, 2)])
+        for cnot_original in sorted(overhead_entropy_by_cnot_original.keys()):
+            pairs = overhead_entropy_by_cnot_original[cnot_original]  # [(overhead, avg_entropy), ...]
+            if not pairs:
+                continue
+            overheads, entropies = zip(*pairs)  # -> due tuple: (o1,o2,...) e (e1,e2,...)
+            avg_overhead = sum(overheads) / len(overheads)
+            avg_entropy  = sum(entropies) / len(entropies)
+            writer.writerow([cnot_original, round(avg_overhead, 2), avg_entropy])
+
 
 
 def save_results(results, results_file):
@@ -225,14 +240,15 @@ def transpile_and_evaluate_random_circuits(filepath_adj, folder_input, folder_re
 
 def transpile_and_evaluate_ffqram_circuit(filepath_adj, qc_ffqram, folder_results, coupling_map):
     results = []
-    num_cnot_qc_original, num_cnot_qc_trnspiled =process_circuit(
+    result =process_circuit(
             qc_ffqram,
             coupling_map,
             False
         )
     #entropy = von_neumann_entropy(qc_ffqram)
-    results.append((os.path.basename(filepath_adj), num_cnot_qc_original, num_cnot_qc_trnspiled))
-    results_file = os.path.join(folder_results, f"ffqram_results.csv")
+    results.append((os.path.basename(filepath_adj), result))
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+    results_file = os.path.join(folder_results, f"results_{adj_name}.csv")
     save_results_traspiler(results, results_file, include_file_input=False)
 
 def run_ffqram_synthesis(filepath_adj, filepath_jar, folder_input, folder_output, folder_results, coupling_map):
@@ -352,10 +368,13 @@ def main():
         df = df.to_numpy()
 
         ffqram_qc = FFQRAM(dataset)
-        print(ffqram_qc.count_ops())
-        print(count_cx_gates(ffqram_qc))
-        transpile_and_evaluate_ffqram_circuit(filepath_adj, ffqram_qc, folder_results, coupling_map)
-
+       
+        discretized = qasm_to_clifford_and_t(ffqram_qc)
+        print(discretized.count_ops())
+        print(count_cx_gates(discretized))
+        print(von_neumann_entropy(discretized))
+        transpile_and_evaluate_ffqram_circuit(filepath_adj, discretized, folder_results, coupling_map)
+       
 
     else:
         print("Scelta non valida. Uscita.")
