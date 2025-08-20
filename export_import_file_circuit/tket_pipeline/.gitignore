@@ -4,9 +4,21 @@ __pycache__/
 *$py.class
 
 # Virtual environments
-venv/
-.env/
+# Virtual environments
+venv_pytket/        # <— la tua venv attuale
 .venv/
+venv/
+env/
+venv*/              # copre nomi tipo venv_xxx
+.env/
+**/.venv/
+**/venv*/
+**/env/
+
+# (paracadute, se serve)
+**/lib/python*/site-packages/
+**/Lib/site-packages/
+
 
 # VS Code / PyCharm settings
 .vscode/

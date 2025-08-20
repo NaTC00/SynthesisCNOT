@@ -5,7 +5,7 @@ from pytket import Circuit, Qubit
 from pytket.circuit import OpType
 from pytket.architecture import Architecture
 from pytket.architecture import Architecture
-from pytket.passes import SequencePass, FullPeepholeOptimise, RoutingPass, PlacementPass
+from pytket.passes import SequencePass, FullPeepholeOptimise, RoutingPass, PlacementPass, AutoRebase
 from pytket.placement import Placement, GraphPlacement
 from pytket.placement import place_with_map
 import networkx as nx
@@ -30,6 +30,10 @@ def check_input_files(file):
     if not os.path.isfile(file):
         sys.exit(f"Errore: file non è stato trovato: {file}")
 
+def check_input_folder(folder):
+    if not os.path.isdir(folder):
+        sys.exit(f"Errore: cartella non trovata: {folder}")
+
 def ensure_directories(*folders):
     for folder in folders:
         os.makedirs(folder, exist_ok=True)
@@ -44,7 +48,7 @@ def load_adjacency_matrix_from_file(filepath):
             row = list(map(int, line.strip().split()))
             adj_matrix.append(row)
 
-    return adj_matrix
+    return (adj_matrix, size)
 
 
 def create_circuit_from_simple_file(filename: str) -> Circuit:
@@ -84,12 +88,11 @@ def create_circuit_from_simple_file(filename: str) -> Circuit:
                 raise ValueError(f"Porta non supportata: {gate_name}")
     return qc
 
-def process_circuit_file_tket(filepath_input, filepath_adj, architecture):
+def process_circuit_file_tket(qc_original: Circuit, architecture: Architecture):
 
-
-    qc_original = create_circuit_from_simple_file(filepath_input)
     
     cnot_count_before_transpilation = qc_original.n_gates_of_type(OpType.CX)
+
 
    # Mapping 1:1 logico -> fisico
     qmap = {
@@ -100,19 +103,23 @@ def process_circuit_file_tket(filepath_input, filepath_adj, architecture):
     # Applica il mapping
     place_with_map(qc_original, qmap)
 
+
+    rebase_pass = AutoRebase({OpType.CX, OpType.Rz, OpType.Rx, OpType.H, OpType.S, OpType.Sdg, OpType.T, OpType.Tdg, OpType.X, OpType.Y, OpType.Z})
+
     # Definizione dei pass di compilazione
-    pass_seq = SequencePass([  
-        RoutingPass(architecture),             # Inserisce SWAP dove necessario
-        FullPeepholeOptimise()         # Ottimizza le porte
+    pass_seq = SequencePass([
+        RoutingPass(architecture),      # Inserisce SWAP dove necessario
+        FullPeepholeOptimise(),          # Ottimizza le porte
+        rebase_pass
     ])
 
     # Applica la sequenza di pass
     pass_seq.apply(qc_original)
 
+
+
     cnot_count_after_transpilation = qc_original.n_gates_of_type(OpType.CX)
     return (
-        os.path.basename(filepath_input),
-        os.path.basename(filepath_adj),
         cnot_count_before_transpilation,
         cnot_count_after_transpilation
         
@@ -135,6 +142,14 @@ def create_file_from_circuit(qc: Circuit):
             print(f"S {cmd.qubits[0].index[0]}")
         elif cmd.op.type == OpType.Sdg:
             print(f"S+ {cmd.qubits[0].index[0]}")
+        elif cmd.op.type == OpType.X:
+            print(f"X {cmd.qubits[0].index[0]}")
+        elif cmd.op.type == OpType.Y:
+            print(f"Y {cmd.qubits[0].index[0]}")
+        elif cmd.op.type == OpType.Z:
+            print(f"Z {cmd.qubits[0].index[0]}")
+        elif cmd.op.type == OpType.H:
+            print(f"H {cmd.qubits[0].index[0]}")
         elif cmd.op.type == OpType.CX:
             control = cmd.qubits[0].index[0]
             target = cmd.qubits[1].index[0]
