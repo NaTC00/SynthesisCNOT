@@ -3,10 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
-venv/
-.env/
-.venv/
 
 # VS Code / PyCharm settings
 .vscode/
@@ -17,6 +13,20 @@ venv/
 
 # MacOS junk
 .DS_Store
+
+# Virtual environments
+.venv/
+venv/
+env/
+venv*/              # copre nomi tipo venv_xxx
+.env/
+**/.venv/
+**/venv*/
+**/env/
+
+# (paracadute, se serve)
+**/lib/python*/site-packages/
+**/Lib/site-packages/
 
 # Results or temp files
 *.csv

@@ -4,8 +4,7 @@ __pycache__/
 *$py.class
 
 # Virtual environments
-# Virtual environments
-venv_pytket/        # <— la tua venv attuale
+venv_pytket/       
 .venv/
 venv/
 env/

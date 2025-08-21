@@ -248,7 +248,7 @@ def FFQRAM(data):
 
         #qc.barrier()
         
-    return qc#.decompose(reps=10) 
+    return qc
 
 def qasm_to_clifford_and_t(qc, basic_approx_depth=10):
     qc = transpile(qc,basis_gates=["cx","u3"]) # You should transpile first to cx and u3, so it will deal with 2Q gates
