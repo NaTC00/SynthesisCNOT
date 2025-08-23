@@ -1,19 +1,32 @@
+from collections import defaultdict
+import csv
+import gc
+import os
+import re
+from pathlib import Path
+from typing import Callable, Iterable
 from qiskit import QuantumCircuit, QuantumRegister, transpile, ClassicalRegister
 from qiskit.transpiler import CouplingMap, Layout
 from qiskit_aer import Aer, StatevectorSimulator
-from qiskit.quantum_info import Statevector, state_fidelity
+from qiskit.quantum_info import Statevector, state_fidelity, DensityMatrix, entropy
 from sklearn import datasets
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, normalize
 import matplotlib.pyplot as plt
-from qiskit.circuit.library import MCMTGate, RYGate, RZGate, CRYGate, XGate
-from qiskit.visualization import plot_bloch_vector, plot_bloch_multivector, plot_histogram
+from qiskit.circuit.library import StatePreparation
 from qiskit.synthesis import generate_basic_approximations
 from qiskit.transpiler.passes import SolovayKitaev
 import numpy as np
 from sklearn.preprocessing import normalize
 
+CLIFFORD_T_BASIS = ['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u']
+_ALLOWED_IGNORED = {"barrier","measure","id"}  
+
+def ensure_directories(folder) -> Path:
+    folder = Path(folder)   # converte la stringa in Path
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
 
 
 #crea il circuito dal file contente le porte   
@@ -188,67 +201,7 @@ def get_statevector(circuit):
     statevector = result.get_statevector()
     return statevector
 
-def generate_normalized_dataset(n_rows, n_cols, seed=42):
 
-    # Imposta il seme del generatore di numeri casuali (così la matrice generata sarà sempre la stessa ogni volta che esegui il codice con lo stesso seed)
-    np.random.seed(seed)
-
-    # Genera una matrice n_rows x n_cols
-    # I valori sono numeri reali casuali distribuiti uniformemente tra 0 e 1
-    data = np.random.rand(n_rows, n_cols)
-
-    # Applica normalizzazione L2 sulle righe
-    data_normalized = normalize(data, norm='l2')
-    return data_normalized
-
-
-def indexing(circuit, Qregister, index):
-    size = Qregister.size # numero di qubit nel registro
-
-    xored = index ^ (pow(2, size) - 1) # XOR tra index e 111..1 quindi porta a 0 i bit a 1
-    j=1
-    for k in (2**p for p in range(0, size)): # itera sulle potenze di 2 fino a size (le potenze di 2 contengono solo un 1)
-        if xored & k >= j: # xored & k restituisce: k se il bit p in xored è 1; 0 se quel bit è 0
-            circuit.x(Qregister[j-1]) #esegue il flip
-        j = j+1
-        
-def FFQRAM(data):
-    
-    # data: matrice N x M
-
-    N, M = data.shape # N: numero di righe (N pattern), M: numero di colonne (M features) 
-    
-    row_index = QuantumRegister(int(np.ceil(np.log2(N))), name="row_index") # Qubit di indirizzo per le righe
-
-    col_index = QuantumRegister(int(np.ceil(np.log2(M))), name="col_index") # Qubit di indirizzo per le colonne
-
-    r = QuantumRegister(1) # Qubit ausiliario dove andranno le ampiezze 
-
-    qc = QuantumCircuit(row_index, col_index, r)
-    
-    # Metto i qubit di indirizzo in sovrapposizione
-    qc.h(row_index)
-    qc.h(col_index)
-    
-    # Ciclo su tutti i pattern
-    for i in range(N):
-
-        # vettore con le M features
-        vector = data[i]
-
-        indexing(qc, row_index, i) #bit-flip da bit classici sul pattern i
-        
-        for j in range(len(vector)): 
-            indexing(qc, col_index, j) # FLIP (trasforma pattern j in tutti 1)
-            qc.append(MCMTGate(RYGate(2*np.arcsin(vector[j])), len(row_index[:]+col_index[:]), 1), row_index[:]+col_index[:]+r[0:])
-            indexing(qc, col_index, j) # FLOP (inverte il flip -> riporta al pattern j)
-            #qc.barrier()
-
-        indexing(qc, row_index, i)
-
-        #qc.barrier()
-        
-    return qc
 
 def qasm_to_clifford_and_t(qc, basic_approx_depth=10):
     qc = transpile(qc,basis_gates=["cx","u3"]) # You should transpile first to cx and u3, so it will deal with 2Q gates
@@ -257,3 +210,182 @@ def qasm_to_clifford_and_t(qc, basic_approx_depth=10):
     skd = SolovayKitaev(recursion_degree=1, basic_approximations=approx)
     new_qc = skd(qc)
     return new_qc
+
+
+
+# =========================
+# --- Utils di filesystem
+# =========================
+def ensure_directories(folder) -> Path:
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
+
+# --- base name: results_{adj_name}_{kind}
+def csv_name_base(adj_name: str, kind: str) -> str:
+    return f"results_{adj_name}_{kind}"
+
+# --- regex: ^results_{adj_name}_{kind}_(?P<idx>\d+)\.csv$
+def csv_regex_filename(adj_name: str, kind: str) -> str:
+    base = csv_name_base(adj_name, kind)
+    return rf"^{re.escape(base)}_(?P<idx>\d+)\.csv$"
+
+def next_progressive_index(out_dir: Path, regex_filename: str, group_name: str = "idx") -> int:
+    max_idx = 0
+    for f in out_dir.iterdir():
+        if f.is_file():
+            m = re.match(regex_filename, f.name)
+            if m:
+                try:
+                    max_idx = max(max_idx, int(m.group(group_name)))
+                except (KeyError, ValueError):
+                    pass
+    return max_idx + 1
+
+
+def next_progressive_index(out_dir: Path, regex_filename: str, group_name: str = "idx") -> int:
+    """
+    Scansiona la directory e trova il prossimo indice progressivo per i file
+    che matchano la regex (deve includere (?P<idx>...)).
+    """
+    max_idx = 0
+    for f in out_dir.iterdir():
+        if f.is_file():
+            m = re.match(regex_filename, f.name)
+            if m:
+                try:
+                    idx = int(m.group(group_name))
+                    if idx > max_idx:
+                        max_idx = idx
+                except (KeyError, ValueError):
+                    pass
+    return max_idx + 1
+
+
+
+
+
+
+
+
+
+def build_stateprep_from_circuit(qc: QuantumCircuit) -> QuantumCircuit:
+    """Restituisce un nuovo circuito che prepara lo stesso stato finale di qc, partendo da |0...0>."""
+    sv = Statevector.from_instruction(qc)
+    n = qc.num_qubits
+    prep = StatePreparation(sv.data)
+    new_qc = QuantumCircuit(n)
+    new_qc.append(prep, list(range(n)))
+    return new_qc.decompose(reps=10)
+
+def von_neumann_entropy(circuit: QuantumCircuit) -> float:
+    # Step 1: recupero lo state vector dal circuito
+    #state = Statevector.from_instruction(circuit)
+    
+    
+    # Step 2: converto lo state vector nella matrice densità
+    #rho = DensityMatrix(state)
+    
+    # Step 3: calcolo l'entropia
+    return 0 #entropy(rho)
+
+def is_clifford_t(qc: QuantumCircuit) -> bool:
+    """True se tutti i gate del circuito sono in Clifford+T (ignorando barrier/measure/id)."""
+    ops = {inst.name for inst,_,_ in qc.data}
+    ops -= _ALLOWED_IGNORED
+    return ops.issubset(set(CLIFFORD_T_BASIS))
+
+def to_clifford_t_if_needed(qc: QuantumCircuit) -> QuantumCircuit:
+    """Se qc non è già in Clifford+T, lo converto in quella base; altrimenti lo restituisco inalterato."""
+    if is_clifford_t(qc):
+        return qc
+    else: 
+        return qasm_to_clifford_and_t(qc)
+
+def evaluate_over_levels(
+    qc: QuantumCircuit,
+    coupling_map,
+    *,
+    levels: Iterable[int] = (0,1,2,3)
+):
+    """Transpilo qc ai vari livelli e ritorna liste di CNOT e entropie."""
+    cnot_levels, entropy_levels = [], []
+    for lvl in levels:
+        qct = transpile(
+            qc,
+            coupling_map=coupling_map,
+            basis_gates=CLIFFORD_T_BASIS,
+            layout_method="trivial",
+            optimization_level=lvl,
+            seed_transpiler=123,
+        )
+        cnot_levels.append(count_cx_gates(qct))
+        print(f"Traspilato livello {lvl}")
+        entropy_levels.append(float(von_neumann_entropy(qct)))
+    return cnot_levels, entropy_levels
+
+def write_compare_results_csv(out_csv: Path, rows: list, headers: list):
+    """
+    Scrivo i risultati dettagliati per ciascun circuito in un CSV.
+    """
+   
+    with open(out_csv, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(headers)
+        for row in rows:
+            w.writerow(row)
+
+def write_summary_csv(out_csv: Path, rows: list, headers: list):
+    """
+    Raggruppa le righe per CNOT Originale e calcola le medie di overhead, entropia e fidelity.
+    Salva in un file `_summary.csv` accanto al CSV principale.
+    """
+    grouped = defaultdict(list)
+
+    # indice della colonna "CNOT Originale"
+    cnot_idx = headers.index("CNOT Originale")
+    # indici delle metriche da mediare
+    overhead_qc_idx = headers.index("Overhead medio (QC) (%)")
+    overhead_sp_idx = headers.index("Overhead medio (StatePrep) (%)")
+    entropy_qc_idx = headers.index("Entropia media (QC-Transpiled)")
+    entropy_sp_idx = headers.index("Entropia media (StatePrep-Transpiled)")
+    fidelity_idx = headers.index("Fidelity (Original vs StatePrep)")
+    fidelity_idx_ct  = headers.index("Fidelity (Original vs Clifford-T)") if "Fidelity (Original vs Clifford-T)" in headers else None
+
+    for r in rows:
+        grouped[r[cnot_idx]].append(r)
+
+    summary_path = out_csv.with_name(out_csv.stem + "_summary.csv")
+    with open(summary_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        hdr = [
+            "CNOT Originale",
+            "Overhead medio (QC) (%)",
+            "Overhead medio (StatePrep) (%)",
+            "Entropia media (QC)",
+            "Entropia media (StatePrep)",
+            "Fidelity media (Original vs StatePrep)"
+        ]
+        if fidelity_idx_ct is not None:
+            hdr.append("Fidelity media (Original vs Clifford-T)")
+        w.writerow(hdr)
+
+
+        for cnot_original, group in sorted(grouped.items()):
+            avg_over_qc = sum(float(r[overhead_qc_idx]) for r in group) / len(group)
+            avg_over_sp = sum(float(r[overhead_sp_idx]) for r in group) / len(group)
+            avg_ent_qc  = sum(float(r[entropy_qc_idx]) for r in group) / len(group)
+            avg_ent_sp  = sum(float(r[entropy_sp_idx]) for r in group) / len(group)
+            avg_fid_sp  = sum(float(r[fidelity_idx]) for r in group) / len(group)
+            row = [
+                cnot_original,
+                round(avg_over_qc, 2),
+                round(avg_over_sp, 2),
+                round(avg_ent_qc, 6),
+                round(avg_ent_sp, 6),
+                round(avg_fid_sp, 6)
+            ]
+            if fidelity_idx_ct is not None:
+                avg_fid_ct = sum(float(r[fidelity_idx_ct]) for r in group) / len(group)
+                row.append(round(avg_fid_ct, 6))
+            w.writerow(row)
