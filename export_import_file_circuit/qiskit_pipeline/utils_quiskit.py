@@ -29,48 +29,7 @@ def ensure_directories(folder) -> Path:
     return folder
 
 
-#crea il circuito dal file contente le porte   
-def create_circuit_from_file(filename: str) -> QuantumCircuit:
-    with open(filename, 'r') as f:
-       
-        lines = [line.strip() for line in f.readlines() if line.strip()]
-
-        num_qubits = int(lines[0])
-        qc = QuantumCircuit(num_qubits)
-
-        for line in lines[1:]:
-            if '[' not in line or ']' not in line:
-                continue #ignora righe malformate
-            
-            gate_name, qubit_str = line.split('[') # splitta la stringa in corrispondenza di [
-            qubit_str = qubit_str.replace(']', '')
-
-            qubits = [int(q.strip()) - 1 for q in qubit_str.split(',')]
-            gate_name = gate_name.strip().upper()
-
-            if gate_name == 'H':
-                qc.h(qubits[0])
-            elif gate_name == 'X':
-                qc.x(qubits[0])
-            elif gate_name == 'S':
-                qc.s(qubits[0])
-            elif gate_name == 'S+':
-                qc.sdg(qubits[0])
-            elif gate_name == 'T':
-                qc.t(qubits[0])
-            elif gate_name == 'T+':
-                qc.tdg(qubits[0])
-            elif gate_name == 'Y':
-                qc.y(qubits[0])
-            elif gate_name == 'Z':
-                qc.z(qubits[0])
-            elif gate_name == 'CNOT':
-                qc.cx(qubits[0], qubits[1])
-            else:
-                raise ValueError(f"Porta non supportata: {gate_name}")
-    return qc
-
-
+#crea il circuito dal file
 def create_circuit_from_simple_file(filename: str) -> QuantumCircuit:
     with open(filename, 'r') as f:
         lines = [line.strip() for line in f.readlines() if line.strip()]
@@ -279,24 +238,19 @@ def build_stateprep_from_circuit(qc: QuantumCircuit) -> QuantumCircuit:
     return new_qc.decompose(reps=10)
 
 def von_neumann_entropy(circuit: QuantumCircuit) -> float:
-    # Step 1: recupero lo state vector dal circuito
-    #state = Statevector.from_instruction(circuit)
     
+    state = Statevector.from_instruction(circuit)
     
-    # Step 2: converto lo state vector nella matrice densità
-    #rho = DensityMatrix(state)
-    
-    # Step 3: calcolo l'entropia
-    return 0 #entropy(rho)
+    return entropy(state)
 
 def is_clifford_t(qc: QuantumCircuit) -> bool:
-    """True se tutti i gate del circuito sono in Clifford+T (ignorando barrier/measure/id)."""
+    """True se tutti i gate del circuito sono in Clifford+T (ignorando barrier/measure/id)"""
     ops = {inst.name for inst,_,_ in qc.data}
     ops -= _ALLOWED_IGNORED
     return ops.issubset(set(CLIFFORD_T_BASIS))
 
 def to_clifford_t_if_needed(qc: QuantumCircuit) -> QuantumCircuit:
-    """Se qc non è già in Clifford+T, lo converto in quella base; altrimenti lo restituisco inalterato."""
+    """Se qc non è già in Clifford+T, lo converto in quella base; altrimenti lo restituisco inalterato"""
     if is_clifford_t(qc):
         return qc
     else: 
@@ -309,7 +263,7 @@ def evaluate_over_levels(
     levels: Iterable[int] = (0,1,2,3)
 ):
     """Transpilo qc ai vari livelli e ritorna liste di CNOT e entropie."""
-    cnot_levels, entropy_levels = [], []
+    cnot_levels = []
     for lvl in levels:
         qct = transpile(
             qc,
@@ -321,8 +275,7 @@ def evaluate_over_levels(
         )
         cnot_levels.append(count_cx_gates(qct))
         print(f"Traspilato livello {lvl}")
-        entropy_levels.append(float(von_neumann_entropy(qct)))
-    return cnot_levels, entropy_levels
+    return cnot_levels
 
 def write_compare_results_csv(out_csv: Path, rows: list, headers: list):
     """
@@ -347,8 +300,6 @@ def write_summary_csv(out_csv: Path, rows: list, headers: list):
     # indici delle metriche da mediare
     overhead_qc_idx = headers.index("Overhead medio (QC) (%)")
     overhead_sp_idx = headers.index("Overhead medio (StatePrep) (%)")
-    entropy_qc_idx = headers.index("Entropia media (QC-Transpiled)")
-    entropy_sp_idx = headers.index("Entropia media (StatePrep-Transpiled)")
     fidelity_idx = headers.index("Fidelity (Original vs StatePrep)")
     fidelity_idx_ct  = headers.index("Fidelity (Original vs Clifford-T)") if "Fidelity (Original vs Clifford-T)" in headers else None
 
@@ -362,8 +313,6 @@ def write_summary_csv(out_csv: Path, rows: list, headers: list):
             "CNOT Originale",
             "Overhead medio (QC) (%)",
             "Overhead medio (StatePrep) (%)",
-            "Entropia media (QC)",
-            "Entropia media (StatePrep)",
             "Fidelity media (Original vs StatePrep)"
         ]
         if fidelity_idx_ct is not None:
@@ -374,15 +323,11 @@ def write_summary_csv(out_csv: Path, rows: list, headers: list):
         for cnot_original, group in sorted(grouped.items()):
             avg_over_qc = sum(float(r[overhead_qc_idx]) for r in group) / len(group)
             avg_over_sp = sum(float(r[overhead_sp_idx]) for r in group) / len(group)
-            avg_ent_qc  = sum(float(r[entropy_qc_idx]) for r in group) / len(group)
-            avg_ent_sp  = sum(float(r[entropy_sp_idx]) for r in group) / len(group)
             avg_fid_sp  = sum(float(r[fidelity_idx]) for r in group) / len(group)
             row = [
                 cnot_original,
                 round(avg_over_qc, 2),
                 round(avg_over_sp, 2),
-                round(avg_ent_qc, 6),
-                round(avg_ent_sp, 6),
                 round(avg_fid_sp, 6)
             ]
             if fidelity_idx_ct is not None:

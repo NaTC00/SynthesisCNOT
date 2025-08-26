@@ -142,7 +142,7 @@ def evaluate_qc_vs_stateprep(
     qc_ct = to_clifford_t_if_needed(qc)
 
     # --- transpile su coupling map con base Clifford+T
-    qc_cx_levels, qc_entropy_levels = evaluate_over_levels(
+    qc_cx_levels = evaluate_over_levels(
         qc_ct, coupling_map,
         levels=levels
     )
@@ -152,7 +152,7 @@ def evaluate_qc_vs_stateprep(
     # --- porto il circuito della StatePreparation in Clifford+T (se necessario)
     qc_stateprep_ct = to_clifford_t_if_needed(qc_stateprep)
 
-    sp_cx_levels, sp_entropy_levels = evaluate_over_levels(
+    sp_cx_levels = evaluate_over_levels(
         qc_stateprep_ct, coupling_map,
         levels=levels
     )
@@ -162,6 +162,8 @@ def evaluate_qc_vs_stateprep(
 
      # --- CNOT logici
     cnot_original_logical = count_cx_gates(qc_ct)
+
+    cnot_original_stateprep = count_cx_gates(qc_stateprep_ct)
 
     fidelity_logical = None
     if file_input is None:
@@ -174,9 +176,8 @@ def evaluate_qc_vs_stateprep(
     cnot_qc_avg = float(np.mean(qc_cx_levels))
     cnot_sp_avg = float(np.mean(sp_cx_levels))
     overhead_qc_avg_pct = 0.0 if cnot_original_logical == 0 else (cnot_qc_avg - cnot_original_logical) / cnot_original_logical * 100.0
-    overhead_sp_avg_pct = 0.0 if cnot_original_logical == 0 else (cnot_sp_avg - cnot_original_logical) / cnot_original_logical * 100.0
-    entropy_qc_avg = float(np.mean(qc_entropy_levels))
-    entropy_sp_avg = float(np.mean(sp_entropy_levels))
+    overhead_sp_avg_pct = 0.0 if cnot_original_stateprep == 0 else (cnot_sp_avg - cnot_original_stateprep) / cnot_original_stateprep * 100.0
+
 
     
 
@@ -184,12 +185,11 @@ def evaluate_qc_vs_stateprep(
         file_input,
         adj_name,
         cnot_original_logical,
+        cnot_original_stateprep,
         round(cnot_qc_avg, 2),
         round(cnot_sp_avg, 2),
         round(overhead_qc_avg_pct, 2),
         round(overhead_sp_avg_pct, 2),
-        round(entropy_qc_avg, 6),
-        round(entropy_sp_avg, 6),
         round(fidelity_stateprep, 6),
     ]
 
@@ -233,12 +233,11 @@ def save_qc_vs_stateprep_results(
         "File Input",
         "Matrice Adiacenza",
         "CNOT Originale",
+        "CNOT StatePrep",
         "CNOT medio (QC-Transpiled)",
         "CNOT medio (StatePrep-Transpiled)",
         "Overhead medio (QC) (%)",
         "Overhead medio (StatePrep) (%)",
-        "Entropia media (QC-Transpiled)",
-        "Entropia media (StatePrep-Transpiled)",
         "Fidelity (Original vs StatePrep)"
     ]
     if kind == "ffqram":
@@ -261,7 +260,6 @@ def save_qc_vs_stateprep_results(
     print(f"Salvati: {out_csv} e {out_csv.with_name(out_csv.stem + '_summary.csv')}")
 
 def run_ffqram_experiments_on_random_datasets(
-    num_qubits: int,
     filepath_adj: str,            
     folder_results: str | Path,   
     coupling_map,                 
@@ -272,10 +270,9 @@ def run_ffqram_experiments_on_random_datasets(
     # --------- calcolo dimensione dataset 2^k x 2^k ----------
     rows = []
     for seed in seeds:
+
         # 1) genera dataset normalizzato 2^k x 2^k con seed diverso
-        N, M = adjust_dataset_for_hw(coupling_map)
-    
-        dataset = generate_normalized_dataset(N, M, seed=seed)
+        dataset = generate_normalized_dataset(pow(2, K), pow(2, K), seed=seed)
 
         # 2) costruisco circuito FF-QRAM
         qc = FFQRAM(dataset)
@@ -329,7 +326,7 @@ def main():
 
     elif choice == '2':
         num_qubits = coupling_map.size()
-        run_ffqram_experiments_on_random_datasets(num_qubits, filepath_adj, folder_results, coupling_map, levels=(0,1,2,3), seeds=(101, 202, 303))
+        run_ffqram_experiments_on_random_datasets(filepath_adj, folder_results, coupling_map, levels=(0,1,2,3), seeds=(101, 202, 303))
         
        
 

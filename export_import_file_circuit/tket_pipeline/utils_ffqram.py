@@ -5,6 +5,34 @@ import numpy as np
 from pytket.circuit import Circuit, OpType, Qubit, Op, QControlBox
 from sklearn.preprocessing import normalize
 from pytket.passes import DecomposeBoxes, DecomposeMultiQubitsCX
+from pytket.architecture import Architecture
+
+def ffqram_qubits_required(N, M):
+    return np.ceil(np.log2(N)) + np.ceil(np.log2(M)) + 1
+
+def adjust_dataset_for_hw(num_qubits):
+    """
+    Genera un dataset randomico N x M compatibile con la coupling map.
+    Sceglie N,M come potenze di 2 massime che rispettano i vincoli.
+    """
+    Q_hw = num_qubits  # qubit fisici
+    best = None
+
+    # cerca la coppia (N,M) più grande possibile che sta dentro Q_hw
+    for a in range(1, Q_hw):   # log2(N)
+        for b in range(1, Q_hw):
+            N, M = 2**a, 2**b
+            Q_req = ffqram_qubits_required(N, M)
+            if Q_req <= Q_hw:
+                if best is None or N*M > best[0]*best[1]:
+                    best = (N, M)
+
+    if best is None:
+        raise ValueError(f"Nessun dataset compatibile con {Q_hw} qubit hardware.")
+
+    N, M = best
+    print(f"[INFO] Uso dataset {N}x{M} (richiede {ffqram_qubits_required(N,M)} qubit su {Q_hw} disponibili)")
+    return (N,M)
 
 def generate_normalized_dataset(n_rows, n_cols, seed=17):
 
@@ -18,6 +46,8 @@ def generate_normalized_dataset(n_rows, n_cols, seed=17):
     # Applica normalizzazione L2 sulle righe
     data_normalized = normalize(data, norm='l2')
     return data_normalized
+
+
 
 # applica X dove l'indice binario ha bit a 1 (come in Qiskit indexing) ---
 def indexing_tk(circ: Circuit, qubits: List[Qubit], index: int) -> None:
@@ -44,51 +74,6 @@ def multi_controlled_ry(circ: Circuit, theta: float, controls, target):
     mc_ry = QControlBox(ry_op, n_controls=len(controls))   # control_state default: tutti |1>
     circ.add_gate(mc_ry, [*controls, target])
 
-# --- FFQRAM in pytket ---
-"""def FFQRAM_tk(data: np.ndarray) -> Circuit:
- 
-    N, M = data.shape
-
-    n_row = int(np.ceil(np.log2(N))) if N > 1 else 1
-    n_col = int(np.ceil(np.log2(M))) if M > 1 else 1
-
-    circ = Circuit()
-
-    # Registi quantistici con nomi equivalenti
-    row = circ.add_q_register("row_index", n_row)       # -> List[Qubit]
-    col = circ.add_q_register("col_index", n_col)       # -> List[Qubit]
-    reg = circ.add_q_register("register", 1)            # target r
-
-    # H su tutti gli indici
-    for q in row: circ.add_gate(OpType.H, [q])
-    for q in col: circ.add_gate(OpType.H, [q])
-
-    # Loop come nel tuo codice
-    for i in range(N):
-        vector = data[i]
-
-        # Seleziona riga i
-        indexing_tk(circ, row, i)
-
-        for j in range(len(vector)):
-            # Seleziona colonna j
-            indexing_tk(circ, col, j)
-
-            # angolo 2*arcsin(value)
-            theta = 2.0 * float(np.arcsin(vector[j]))
-
-            # C^{n_row+n_col}( RY(theta) ) sul qubit r[0]
-            controls = [*row, *col]  
-            multi_controlled_ry(circ, theta, controls, reg[0])
-
-            # Deseleziona colonna j
-            indexing_tk(circ, col, j)
-
-        # Deseleziona riga i
-        indexing_tk(circ, row, i)
-
-    return circ
-"""
 
 def FFQRAM_tk(data: np.ndarray) -> Circuit:
     """
@@ -116,8 +101,7 @@ def FFQRAM_tk(data: np.ndarray) -> Circuit:
     for i in range(N):
         for j in range(M):
             value = float(data[i, j])
-            # clamp opzionale per sicurezza numerica
-            value = max(-1.0, min(1.0, value))
+           
             theta = 2.0 * float(np.arcsin(value))
 
             # Indirizzo big-endian: |row>|col|

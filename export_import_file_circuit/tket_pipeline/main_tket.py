@@ -1,6 +1,8 @@
 from locale import normalize
+from pathlib import Path
 import sys
 import os
+from typing import Iterable
 from pytket.architecture import Architecture
 from collections import defaultdict
 import csv
@@ -8,7 +10,7 @@ from pytket.circuit import OpType
 import numpy as np
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler, normalize as sk_normalize
-
+from pytket.circuit import Circuit
 
 from utils_tket import (
    
@@ -16,9 +18,18 @@ from utils_tket import (
     ensure_directories,
     check_input_files,
     matrix_to_architecture,
-    process_circuit_file_tket,
     create_circuit_from_simple_file,
-    check_input_folder
+    check_input_folder,
+    build_stateprep_from_circuit,
+    fidelity,
+    get_statevector,
+    evaluate_routing,
+    write_compare_results_csv,
+    write_summary_csv,
+    csv_regex_filename,
+    next_progressive_index,
+    csv_name_base,
+    fidelity_between_circuits
     
 )
 
@@ -27,111 +38,147 @@ from utils_ffqram import(
     FFQRAM_tk
 )
 
-def save_results_tket(results, results_file,  include_file_input):
-    # Raggruppa gli overhead in base al numero di CNOT originali
-    overhead_by_cnot_original = defaultdict(list)
 
-    # Intestazioni per il file CSV
-    headers = []
-    if include_file_input:
-        headers.append("File Input")  # Nome del file sorgente
-    headers += [
-        "Matrice Adiacenza",      # Nome del file della matrice
-        "CNOT Originale",         # CNOT nel circuito originale
-        "CNOT Tket Transpile",    # CNOT dopo traspilazione TKET
-        "Overhead (%)"            # Aumento percentuale
+#salvo i risultati in un file .csv
+def save_qc_vs_stateprep_results(
+    folder_results: str | Path,
+    filepath_adj: str,
+    rows: list,                      
+    kind: str        
+):
+    
+    # headers standard
+    headers = [
+        "File Input",
+        "Matrice Adiacenza",
+        "CNOT Originale",
+        "CNOT StatePrep",
+        "CNOT (QC-Transpiled)",
+        "CNOT (StatePrep-Transpiled)",
+        "Overhead (QC) (%)",
+        "Overhead (StatePrep) (%)",
+        "Fidelity (Original vs StatePrep)"
+    ]
+    #if kind == "ffqram":
+        #headers.append("Fidelity (Original vs Clifford-T)")
+
+    # prepara cartella
+    out_dir = ensure_directories(folder_results)
+
+    # nome base del file
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+
+    regex = csv_regex_filename(adj_name, kind)
+    next_idx = next_progressive_index(out_dir, regex)
+    out_csv = out_dir / f"{csv_name_base(adj_name, kind)}_{next_idx}.csv"
+
+    # salva CSV e summary
+    write_compare_results_csv(out_csv, rows, headers)
+    write_summary_csv(out_csv, rows, headers)
+
+    print(f"Salvati: {out_csv} e {out_csv.with_name(out_csv.stem + '_summary.csv')}")
+
+def evaluate_qc_vs_stateprep(
+    circ: Circuit,
+    filepath_adj: str,   
+    filepath_circ: str,                   
+    architecture: Architecture):
+
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+    file_input = os.path.basename(filepath_circ) if filepath_circ else None
+
+     # --- CNOT logici
+    cnot_original_logical = circ.n_gates_of_type(OpType.CX)
+    print(cnot_original_logical)
+
+    # --- transpile su coupling map con base Clifford+T
+    c_cx_traspiled = evaluate_routing(circ, architecture)
+    print(c_cx_traspiled)
+
+    # --- costruisco StatePreparation dallo stato di qc_ffqram
+    c_stateprep = build_stateprep_from_circuit(circ)
+
+    cnot_original_stateprep = c_stateprep.n_gates_of_type(OpType.CX)
+   
+    fidelity = fidelity_between_circuits(circ, c_stateprep)
+
+    sp_cx_traspiled = evaluate_routing(c_stateprep, architecture)
+
+   
+    #cnot_sp_avg = float(np.mean(sp_cx_levels))
+    overhead_qc_avg_pct = 0.0 if cnot_original_logical == 0 else (c_cx_traspiled - cnot_original_logical) / cnot_original_logical * 100.0
+    overhead_sp_avg_pct = 0.0 if cnot_original_stateprep == 0 else (sp_cx_traspiled - cnot_original_stateprep) / cnot_original_stateprep * 100.0
+
+    
+
+    row = [
+        file_input,
+        adj_name,
+        cnot_original_logical,
+        cnot_original_stateprep,
+        c_cx_traspiled,
+        sp_cx_traspiled,
+        round(overhead_qc_avg_pct, 2),
+        round(overhead_sp_avg_pct, 2),
+        round(fidelity, 6),
     ]
 
-    rows_to_write = []
+    return row
 
-    for row in results:
-        if include_file_input:
-            file_input = row[0]
-            adj = row[1]
-            cnot_original = row[2][0]
-            cnot_tket = row[2][1]
-        else:
-            adj = row[0]
-            cnot_original = row[1][0]
-            cnot_tket = row[1][1]
-        
-
-        # Calcolo dell’overhead percentuale
-        if cnot_original > 0:
-            overhead = ((cnot_tket - cnot_original) / cnot_original) * 100.0
-        else:
-           
-            overhead = 0.0
+def process_folder_qc_vs_stateprep(
+    folder_input: str | Path,
+    filepath_adj: str,
+    folder_results: str | Path,
+    architecture: Architecture
     
-        overhead_by_cnot_original[cnot_original].append(overhead)
-
-        row_data = []
-        if include_file_input:
-            row_data.append(file_input)
-        row_data += [
-            adj,
-            cnot_original,
-            cnot_tket,
-            round(overhead, 2)
-        ]
-
-        rows_to_write.append(row_data)
-
-    # Ordina per numero di CNOT originale
-    rows_to_write.sort(key=lambda row: row[2])
-
-   
-    with open(results_file, mode="w", newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(headers)
-        writer.writerows(rows_to_write)
-
-   
-    summary_file = results_file.replace(".csv", "_summary.csv")
-    with open(summary_file, mode="w", newline='') as summary_csv:
-        writer = csv.writer(summary_csv)
-        writer.writerow(["CNOT Originale", "Overhead Medio (%)"])
-
-        for cnot_original in sorted(overhead_by_cnot_original.keys()):
-            overhead_list = overhead_by_cnot_original[cnot_original]
-            avg_overhead = sum(overhead_list) / len(overhead_list)
-            writer.writerow([cnot_original, round(avg_overhead, 2)])
-
-def transpile_and_evaluate_all_random_circuits_tket(filepath_adj, folder_input, folder_results, architecture: Architecture):
-    results = []
+):
+    rows = []
 
     for filename in os.listdir(folder_input):
-        filepath_input = os.path.join(folder_input, filename)
-        if not filename.endswith(".txt"):
+        if not filename.endswith(".txt"):  
             continue
 
-         
-       
-       
-        result = process_circuit_file_tket(
-            create_circuit_from_simple_file(filepath_input),
-            architecture
+        filepath_circ = os.path.join(folder_input, filename)
+        print(filepath_circ)
+        qc = create_circuit_from_simple_file(filepath_circ) 
+
+        row = evaluate_qc_vs_stateprep(qc, filepath_adj, filepath_circ, architecture)
+        rows.append(row)
+
+    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="circuit")
+
+
+
+def run_ffqram_experiments_on_random_datasets(
+    filepath_adj: str,            
+    folder_results: str | Path,   
+    architecture,       
+    num_qubits: int,      
+    seeds=(101, 202, 303)
+          
+):
+   
+    # --------- calcolo dimensione dataset 2^k x 2^k ----------
+    rows = []
+    for seed in seeds:
+        # 1) genera dataset normalizzato 2^k x 2^k con seed diverso
+        #N, M = adjust_dataset_for_hw(num_qubits)
+        bits_needed = bits_needed = int(np.ceil(np.log2(num_qubits)))
+        dataset = generate_normalized_dataset(pow(2, bits_needed), pow(2, bits_needed), seed=seed)
+
+        # 2) costruisco circuito FF-QRAM
+        circ_ffqram = FFQRAM_tk(dataset)
+
+        # 4) raccolgo i dati
+        row = evaluate_qc_vs_stateprep(
+            circ=circ_ffqram,
+            filepath_adj=filepath_adj,
+            filepath_circ=None,
+            architecture=architecture
         )
-        results.append((os.path.basename(filepath_input), os.path.basename(filepath_adj), result))
-    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
-    results_file = os.path.join(folder_results, f"my_results_{adj_name}.csv")
-    save_results_tket(results, results_file, True)
+        rows.append(row)
 
-    print(f"Processo completato! Risultati salvati in {results_file}")
-
-def transpile_and_evaluate_ffqram_circuit(circ, filepath_adj, folder_results, architecture: Architecture):
-
-    results = []
-    result = process_circuit_file_tket(
-            circ,
-            architecture
-        )
-    results.append((os.path.basename(filepath_adj), result))
-    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
-    results_file = os.path.join(folder_results, f"my_results_{adj_name}.csv")
-    save_results_tket(results, results_file, False)
-
-    print(f"Processo completato! Risultati salvati in {results_file}")
+    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="ffqram")
 
 def main():
 
@@ -160,37 +207,13 @@ def main():
         
         check_input_folder(folder_input)
 
-        transpile_and_evaluate_all_random_circuits_tket(filepath_adj, folder_input, folder_results, architecture)
+        process_folder_qc_vs_stateprep(folder_input, filepath_adj, folder_results, architecture)
+
+        #transpile_and_evaluate_all_random_circuits_tket(filepath_adj, folder_input, folder_results, architecture)
 
     elif choice == '2':
         
-        bits_needed = bits_needed = int(np.ceil(np.log2(num_qubits)))
-        dataset = generate_normalized_dataset(pow(2, bits_needed), pow(2, bits_needed))
-
-        df = datasets.load_iris(as_frame=True).frame
-        # rename columns
-        df.columns = ["f0","f1","f2","f3","class"]
-
-        # drop class column
-        df = df.drop('class', axis=1)
-
-        df = df.sample(n=2, random_state=123)
-        df.reset_index(drop=True, inplace=True)
-    
-        # dataset random 16x16
-
-        scaler = StandardScaler()
-        df.loc[:,:] = scaler.fit_transform(df.loc[:,:])
-        df.loc[:,:] = sk_normalize(df.loc[:,:])
-        df = df.to_numpy()
-        
-        ffqram_qc = FFQRAM_tk(df)
-
-        print("FFQRAM CREATA")
-       
-       # print(ffqram_qc.n_gates_of_type(OpType.CX))
-        transpile_and_evaluate_ffqram_circuit(ffqram_qc, filepath_adj, folder_results, architecture)
-
+       run_ffqram_experiments_on_random_datasets(filepath_adj, folder_results, architecture, num_qubits, seeds=(101, 202, 303))
 
     else:
         print("Scelta non valida. Uscita.")
