@@ -33,3 +33,55 @@ venv*/              # copre nomi tipo venv_xxx
 *.csv
 *.log
 *.tmp
+
+# Build & packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+*.whl
+
+# Cache di test/lint/type-check
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.hypothesis/
+.cache/
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Estensioni compilate
+*.so
+*.dylib
+*.pyd
+
+# PEP 582
+__pypackages__/
+
+# Segreti/chiavi (oltre a .env)
+*.env
+.env.*
+*.secret
+*.secrets
+*.key
+*.pem
+
+# Swap/backup editor
+*.swp
+*.swo
+*~
+*.bak
+
+# Output di run in background
+nohup.out
+
+# Output del progetto
+qiskit_results/
+logs/

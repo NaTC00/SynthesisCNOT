@@ -32,3 +32,52 @@ venv*/              # copre nomi tipo venv_xxx
 *.csv
 *.log
 *.tmp
+
+# Correzione: .env è un file (e varianti)
+.env
+.env.*
+*.env
+
+# Build & packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+*.whl
+
+# Cache di tool/lint/test
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.hypothesis/
+.cache/
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Estensioni compilate
+*.so
+*.pyd
+*.dylib
+
+# PEP 582
+__pypackages__/
+
+# Output del progetto (Qiskit ecc.)
+qiskit_results/
+logs/
+nohup.out
+
+# Backup/temporanei editor
+*.swp
+*.swo
+*~
+*.bak
+*.orig
+
