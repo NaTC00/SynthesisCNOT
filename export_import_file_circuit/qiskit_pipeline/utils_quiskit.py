@@ -9,16 +9,13 @@ from qiskit import QuantumCircuit, QuantumRegister, transpile, ClassicalRegister
 from qiskit.transpiler import CouplingMap, Layout
 from qiskit_aer import Aer, StatevectorSimulator
 from qiskit.quantum_info import Statevector, state_fidelity, DensityMatrix, entropy
-from sklearn import datasets
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, normalize
 import matplotlib.pyplot as plt
 from qiskit.circuit.library import StatePreparation
 from qiskit.synthesis import generate_basic_approximations
 from qiskit.transpiler.passes import SolovayKitaev
 import numpy as np
-from sklearn.preprocessing import normalize
 
 CLIFFORD_T_BASIS = ['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u']
 _ALLOWED_IGNORED = {"barrier","measure","id"}  

@@ -16,7 +16,6 @@ from collections import defaultdict
 from qiskit.quantum_info import Statevector, state_fidelity, Statevector, DensityMatrix, entropy
 
 from utils_quiskit import (
-    create_circuit_from_file,
     create_file_from_circuit,
     create_circuit_from_simple_file,
     load_adjacency_matrix_from_file,

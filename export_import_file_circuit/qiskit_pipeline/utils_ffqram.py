@@ -2,7 +2,7 @@ from qiskit import QuantumCircuit, QuantumRegister
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import  normalize
-from qiskit.circuit.library import MCMTGate, RYGate, RZGate, CRYGate, XGate
+from qiskit.circuit.library import MCMTGate, RYGate
 import numpy as np
 from sklearn.preprocessing import normalize
 
