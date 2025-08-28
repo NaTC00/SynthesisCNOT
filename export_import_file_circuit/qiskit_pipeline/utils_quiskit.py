@@ -17,7 +17,8 @@ from qiskit.synthesis import generate_basic_approximations
 from qiskit.transpiler.passes import SolovayKitaev
 import numpy as np
 
-CLIFFORD_T_BASIS = ['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u']
+CLIFFORD_T_BASIS = ['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z']
+CLIFFORD_T_BASIS_U = ['cx', 'h', 's', 'sdg', 't', 'tdg', 'x', 'y', 'z', 'u']
 _ALLOWED_IGNORED = {"barrier","measure","id"}  
 
 def ensure_directories(folder) -> Path:
@@ -220,6 +221,45 @@ def next_progressive_index(out_dir: Path, regex_filename: str, group_name: str =
 
 
 
+def create_circuit_from_file(filename: str) -> QuantumCircuit:
+    with open(filename, 'r') as f:
+       
+        lines = [line.strip() for line in f.readlines() if line.strip()]
+
+        num_qubits = int(lines[0])
+        qc = QuantumCircuit(num_qubits)
+
+        for line in lines[1:]:
+            if '[' not in line or ']' not in line:
+                continue #ignora righe malformate
+            
+            gate_name, qubit_str = line.split('[') # splitta la stringa in corrispondenza di [
+            qubit_str = qubit_str.replace(']', '')
+
+            qubits = [int(q.strip()) - 1 for q in qubit_str.split(',')]
+            gate_name = gate_name.strip().upper()
+
+            if gate_name == 'H':
+                qc.h(qubits[0])
+            elif gate_name == 'X':
+                qc.x(qubits[0])
+            elif gate_name == 'S':
+                qc.s(qubits[0])
+            elif gate_name == 'S+':
+                qc.sdg(qubits[0])
+            elif gate_name == 'T':
+                qc.t(qubits[0])
+            elif gate_name == 'T+':
+                qc.tdg(qubits[0])
+            elif gate_name == 'Y':
+                qc.y(qubits[0])
+            elif gate_name == 'Z':
+                qc.z(qubits[0])
+            elif gate_name == 'CNOT':
+                qc.cx(qubits[0], qubits[1])
+            else:
+                raise ValueError(f"Porta non supportata: {gate_name}")
+    return qc
 
 
 
@@ -256,16 +296,21 @@ def to_clifford_t_if_needed(qc: QuantumCircuit) -> QuantumCircuit:
 def evaluate_over_levels(
     qc: QuantumCircuit,
     coupling_map,
+    isStatePrep,
     *,
     levels: Iterable[int] = (0,1,2,3)
 ):
+    if isStatePrep:
+        basis_gates = CLIFFORD_T_BASIS_U
+    else:
+        basis_gates = CLIFFORD_T_BASIS
     """Transpilo qc ai vari livelli e ritorna liste di CNOT e entropie."""
     cnot_levels = []
     for lvl in levels:
         qct = transpile(
             qc,
             coupling_map=coupling_map,
-            basis_gates=CLIFFORD_T_BASIS,
+            basis_gates=basis_gates,
             layout_method="trivial",
             optimization_level=lvl,
             seed_transpiler=123,
