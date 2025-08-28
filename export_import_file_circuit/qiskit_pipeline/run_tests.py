@@ -1,25 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Esegue automaticamente `main_qiskit.py` per le 6 configurazioni indicate.
 
-Per ogni job passa **2 argomenti**
-    <matrice_adiacenza.txt> <cartella_results>
-
-e risponde alle `input()` del programma con:
-    scelta "1" (Circuiti da file) + path cartella circuiti.
-
-Uso:
-    python run_tests_scelta1.py --program ./main_qiskit.py
-
-Opzionali:
-    --python-exe python3   # interprete da usare (default: quello corrente)
-    --dry-run              # mostra i comandi senza eseguirli
-
-Log:
-    Salva l'output di ciascun job in <cartella_results>/run_<nome_adj>.log
-    e crea un marker <cartella_results>/__DONE__ se il job termina con rc=0.
-"""
 from __future__ import annotations
 import os
 import sys
