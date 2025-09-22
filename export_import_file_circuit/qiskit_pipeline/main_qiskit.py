@@ -3,7 +3,6 @@ import sys
 from typing import Callable, Iterable
 from qiskit.transpiler import CouplingMap
 import os
-from matplotlib import pyplot as plt
 from qiskit import QuantumCircuit, transpile
 from qiskit.providers.fake_provider import GenericBackendV2
 from sklearn import datasets
@@ -11,8 +10,11 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import normalize
 from qiskit.visualization import circuit_drawer
 import csv
+from qiskit.converters import circuit_to_dag
+from qiskit.visualization import dag_drawer
 import networkx as nx
 from collections import defaultdict
+from qiskit.circuit.library import MCMTGate, RYGate
 from qiskit.quantum_info import Statevector, state_fidelity, Statevector, DensityMatrix, entropy
 
 from utils_quiskit import (
@@ -35,7 +37,9 @@ from utils_quiskit import (
     build_stateprep_from_circuit,
     evaluate_over_levels,
     write_compare_results_csv,
-    write_summary_csv
+    write_summary_csv,
+    evaluate_cnot_means_over_layouts,
+    save_qc_results
     
 )
 from utils_ffqram import(
@@ -125,6 +129,68 @@ def load_and_preprocess_data():
     return df.to_numpy()
 
 
+def evaluate_qc(
+    qc: QuantumCircuit,
+    filepath_adj: str,
+    filepath_circ: str,
+    coupling_map: CouplingMap,
+    levels: Iterable[int] = (0, 1, 2, 3),
+    compute_fidelity_logical: bool = False
+):
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+    file_input = os.path.basename(filepath_circ) if filepath_circ else None
+
+    # Circuito in Clifford+T
+    qc_ct = to_clifford_t_if_needed(qc)
+
+   
+
+    # CNOT logici (prima del mapping)
+    cnot_original_logical = count_cx_gates(qc_ct)
+    print(cnot_original_logical)
+
+    # Fidelity logica solo se non c'è file_input
+    fidelity_logical = None
+    if compute_fidelity_logical:
+        fidelity_logical = float(state_fidelity(get_statevector(qc), get_statevector(qc_ct)))
+    print(fidelity_logical)
+    # Medie CNOT per mapping
+    means_per_layout = evaluate_cnot_means_over_layouts(
+        qc_ct,
+        coupling_map,
+        levels=levels,
+        seed_transpiler=123,
+    )
+
+    # Overhead per mapping
+    if cnot_original_logical == 0:
+        overhead_per_layout_pct = {k: 0.0 for k in means_per_layout}
+    else:
+        overhead_per_layout_pct = {
+            name: (avg_cx - cnot_original_logical) / cnot_original_logical * 100.0
+            for name, avg_cx in means_per_layout.items()
+        }
+
+    # --- Costruisco dizionario finale per output tabellare
+    result = {
+        "file_input": file_input,
+        "adj_name": adj_name,
+        "cnot_logical": cnot_original_logical,
+    }
+
+    # aggiungo colonne per CNOT medi
+    for name, avg_cx in means_per_layout.items():
+        result[f"cnot_{name}"] = round(avg_cx, 2)
+
+    # aggiungo colonne per overhead %
+    for name, overhead in overhead_per_layout_pct.items():
+        result[f"overhead_{name}_pct"] = round(overhead, 2)
+
+    # fidelity opzionale
+    if fidelity_logical is not None:
+        result["fidelity_logical"] = round(fidelity_logical, 6)
+
+    return result
 
     
 def evaluate_qc_vs_stateprep(
@@ -145,7 +211,7 @@ def evaluate_qc_vs_stateprep(
         qc_ct, coupling_map,
         levels=levels
     )
-    # --- costruisco StatePreparation dallo stato di qc_ffqram
+   
     qc_stateprep = build_stateprep_from_circuit(qc)
 
     # --- porto il circuito della StatePreparation in Clifford+T (se necessario)
@@ -156,7 +222,7 @@ def evaluate_qc_vs_stateprep(
         levels=levels
     )
 
-    fidelity_stateprep = float(state_fidelity(get_statevector(qc),get_statevector(qc_stateprep)))
+   # fidelity_stateprep = float(state_fidelity(get_statevector(qc),get_statevector(qc_stateprep)))
  
 
      # --- CNOT logici
@@ -189,7 +255,7 @@ def evaluate_qc_vs_stateprep(
         round(cnot_sp_avg, 2),
         round(overhead_qc_avg_pct, 2),
         round(overhead_sp_avg_pct, 2),
-        round(fidelity_stateprep, 6),
+        #round(fidelity_stateprep, 6),
     ]
 
     # aggiungi fidelity_logical solo se disponibile
@@ -204,7 +270,8 @@ def process_folder_qc_vs_stateprep(
     coupling_map: CouplingMap
     
 ):
-    rows = []
+    rows_qc = []
+
 
     for filename in os.listdir(folder_input):
         if not filename.endswith(".txt"):  
@@ -212,12 +279,15 @@ def process_folder_qc_vs_stateprep(
 
         filepath_circ = os.path.join(folder_input, filename)
         print(filepath_circ)
-        qc = create_circuit_from_simple_file(filepath_circ) 
+        qc = create_circuit_from_simple_file(filepath_circ)
 
-        row = evaluate_qc_vs_stateprep(qc, filepath_adj, filepath_circ, coupling_map, levels=(0,1,2,3))
-        rows.append(row)
+    
+        rec_qc = evaluate_qc(qc, filepath_adj, filepath_circ, coupling_map, levels=(0,1,2,3), compute_fidelity_logical=False)
+        rows_qc.append(rec_qc)
 
-    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="circuit")
+    
+    
+    save_qc_results(folder_results, filepath_adj, rows_qc, kind="qc")
 
 #salvo i risultati in un file .csv
 def save_qc_vs_stateprep_results(
@@ -254,7 +324,7 @@ def save_qc_vs_stateprep_results(
 
     # salva CSV e summary
     write_compare_results_csv(out_csv, rows, headers)
-    write_summary_csv(out_csv, rows, headers)
+    write_summary_csv(out_csv, rows)
 
     print(f"Salvati: {out_csv} e {out_csv.with_name(out_csv.stem + '_summary.csv')}")
 
@@ -267,26 +337,33 @@ def run_ffqram_experiments_on_random_datasets(
 ):
    
     # --------- calcolo dimensione dataset 2^k x 2^k ----------
-    rows = []
+    rows_qc = []
+    rows_stateprep = []
     for seed in seeds:
+
+        num_qubits = coupling_map.size()
+
+        K = int(np.ceil(np.log2(num_qubits)))
 
         # 1) genera dataset normalizzato 2^k x 2^k con seed diverso
         dataset = generate_normalized_dataset(pow(2, K), pow(2, K), seed=seed)
 
+       
         # 2) costruisco circuito FF-QRAM
         qc = FFQRAM(dataset)
 
-        # 4) raccolgo i dati
-        row = evaluate_qc_vs_stateprep(
-            qc=qc,
-            filepath_adj=filepath_adj,
-            filepath_circ=None,
-            coupling_map=coupling_map,
-            levels=levels
-        )
-        rows.append(row)
+        rec_qc = evaluate_qc(qc, filepath_adj, None, coupling_map, levels=(0,1,2,3), compute_fidelity_logical=True)
+        rows_qc.append(rec_qc)
 
-    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="ffqram")
+        # --- costruisco StatePreparation dallo stato di qc_ffqram
+        qc_stateprep = build_stateprep_from_circuit(qc)
+
+        rec_sp = evaluate_qc(qc_stateprep, filepath_adj, None, coupling_map, levels=(0,1,2,3), compute_fidelity_logical=True)
+        rows_stateprep.append(rec_sp)
+    
+    save_qc_results(folder_results, filepath_adj, rows_qc, kind="ffqram")
+    save_qc_results(folder_results, filepath_adj, rows_stateprep, kind="stateprep")
+
 
 
 def main():
@@ -324,7 +401,13 @@ def main():
         )"""
 
     elif choice == '2':
-        num_qubits = coupling_map.size()
+        """""qc = QuantumCircuit(5)
+        qc.append(MCMTGate(RYGate(2*np.arcsin(0.5)), 4, 1), [0, 1, 2, 3, 4])
+        print(qc)
+        qc_after = qasm_to_clifford_and_t(qc)
+        print("------------ CIRCUITO AFTER --------------")
+        print(qc_after)"""
+
         run_ffqram_experiments_on_random_datasets(filepath_adj, folder_results, coupling_map, levels=(0,1,2,3), seeds=(101, 202, 303))
         
        

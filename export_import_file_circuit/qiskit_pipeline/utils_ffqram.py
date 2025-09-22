@@ -1,5 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister
-import pandas as pd
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 import numpy as np
 from sklearn.preprocessing import  normalize
 from qiskit.circuit.library import MCMTGate, RYGate
@@ -61,35 +60,76 @@ def FFQRAM(data):
     # data: matrice N x M
 
     N, M = data.shape # N: numero di righe (N pattern), M: numero di colonne (M features) 
-    
-    row_index = QuantumRegister(int(np.ceil(np.log2(N))), name="row_index") # Qubit di indirizzo per le righe
 
-    col_index = QuantumRegister(int(np.ceil(np.log2(M))), name="col_index") # Qubit di indirizzo per le colonne
+    n_row = int(np.ceil(np.log2(max(1, N))))
+    n_col = int(np.ceil(np.log2(max(1, M))))
+
+    
+    row_index = QuantumRegister(n_row, name="row_index") # Qubit di indirizzo per le righe
+
+    col_index = QuantumRegister(n_col, name="col_index") # Qubit di indirizzo per le colonne
 
     r = QuantumRegister(1) # Qubit ausiliario dove andranno le ampiezze 
 
-    qc = QuantumCircuit(row_index, col_index, r)
-    
-    # Metto i qubit di indirizzo in sovrapposizione
-    qc.h(row_index)
-    qc.h(col_index)
-    
-    # Ciclo su tutti i pattern
+    qc = QuantumCircuit(row_index, *( [col_index] if col_index else [] ), r)
+
+    # Hadamard solo se il registro esiste (size > 0)
+    if n_row > 0:
+        qc.h(row_index)
+    if n_col > 0:
+        qc.h(col_index)
+
     for i in range(N):
+        # Flip riga se esistono qubit riga
+        if n_row > 0:
+            indexing(qc, row_index, i)
 
-        # vettore con le M features
         vector = data[i]
+        for j in range(M):
+            amp = float(vector[j])
+            if amp == 0.0:
+                continue
 
-        indexing(qc, row_index, i) #bit-flip da bit classici sul pattern i
-        
-        for j in range(len(vector)): 
-            indexing(qc, col_index, j) # FLIP (trasforma pattern j in tutti 1)
-            qc.append(MCMTGate(RYGate(2*np.arcsin(vector[j])), len(row_index[:]+col_index[:]), 1), row_index[:]+col_index[:]+r[0:])
-            indexing(qc, col_index, j) # FLOP (inverte il flip -> riporta al pattern j)
-            #qc.barrier()
+            # Flip colonna se esistono qubit colonna
+            if n_col > 0:
+                indexing(qc, col_index, j)
 
-        indexing(qc, row_index, i)
+            theta = 2.0 * np.arcsin(np.clip(amp, 0.0, 1.0))
 
-        #qc.barrier()
-        
+            # Costruisci lista controlli solo con registri esistenti
+            controls = list(row_index[:])
+            if n_col > 0:
+                controls += list(col_index[:])
+
+            if len(controls) > 0:
+                qc.append(MCMTGate(RYGate(theta), len(controls), 1), controls + [r[0]])
+            else:
+                # Nessun controllo (caso N=1 e M=1): scrivi direttamente su R
+                qc.ry(theta, r[0])
+
+            if n_col > 0:
+                indexing(qc, col_index, j)
+
+        if n_row > 0:
+            indexing(qc, row_index, i)
+       
     return qc
+
+def reverse_circuit_qubit_order(qc: QuantumCircuit) -> QuantumCircuit:
+    """
+    Crea un nuovo circuito con l'ordine dei qubit globalmente invertito.
+    Mantiene i registri e i classical bits (se presenti).
+    """
+    # Ricrea lo stesso "schema" di registri
+    new_qc = QuantumCircuit(*qc.qregs, *qc.cregs, name=(qc.name or "qc") + "_reversed")
+
+    # Mappa qubit: vecchio -> nuovo (lista globale invertita)
+    all_old = qc.qubits
+    all_new = list(reversed(new_qc.qubits))
+    qmap = {old_q: all_new[idx] for idx, old_q in enumerate(all_old)}
+
+    # Copia tutte le istruzioni rimappando i qubit
+    for inst, qargs, cargs in qc.data:
+        new_qc.append(inst, [qmap[q] for q in qargs], cargs)
+
+    return new_qc

@@ -4,24 +4,284 @@ import os
 from pathlib import Path
 import re
 import sys
-from typing import Sequence, Type
+from typing import Optional, Sequence, Type
 import numpy as np
 from pytket import Circuit, Qubit
 from pytket.circuit import OpType
 from pytket.architecture import Architecture
-from pytket.placement import place_with_map
-from pytket.mapping import LexiRouteRoutingMethod
+from pytket.placement import place_with_map, LinePlacement, GraphPlacement
+from pytket.mapping import MappingManager, LexiLabellingMethod, LexiRouteRoutingMethod
 import networkx as nx
-from typing import List, Union, Tuple
+from typing import Union, Dict, Iterable, List, Tuple
 from pytket.circuit import StatePreparationBox, Node
 from pytket.utils.results import compare_statevectors
 from pytket.transform import Transform
 from pytket.extensions.qiskit import AerStateBackend
+
 from pytket.passes import (
     SequencePass, DecomposeBoxes, RemoveRedundancies, AutoRebase,
     SynthesiseTket, FullPeepholeOptimise,
     KAKDecomposition, CliffordSimp, RoutingPass, DecomposeSwapsToCXs, DecomposeMultiQubitsCX
 )
+from statistics import mean
+from pytket.passes import (
+    PlacementPass, RoutingPass, DecomposeSwapsToCXs, SequencePass, AutoRebase,
+    RemoveRedundancies, FullPeepholeOptimise, EulerAngleReduction, KAKDecomposition,
+    PauliSimp, RepeatPass,
+)
+from pytket.transform import CXConfigType
+
+# -------- base set richiesto --------
+BASE_OPS = {
+    OpType.CX, OpType.U3,  # 'u' di Qiskit corrisponde a U3 in pytket
+    OpType.H, OpType.S, OpType.Sdg, OpType.T, OpType.Tdg,
+    OpType.X, OpType.Y, OpType.Z,
+}
+REBASE = AutoRebase(BASE_OPS)
+
+def _apply_if_pass(c: Circuit, p: Optional[SequencePass]) -> None:
+    if p is not None:
+        p.apply(c)
+
+# -------- helpers --------
+def _optim_pass(level: int) -> SequencePass:
+    """
+    Livelli di ottimizzazione 'ragionevoli' per pytket:
+      0: nessuna ottimizzazione
+      1: pulizia leggera (redundancy + euler su 1q)
+      2: peephole completa + KAK per 2q
+      3: come (2) + PauliSimp (configurabile) e fissaggio finale
+    """
+    if level <= 0:
+        return None
+    if level == 1:
+        return SequencePass([
+            RemoveRedundancies()
+        ])
+    if level == 2:
+        return SequencePass([
+            FullPeepholeOptimise(),  # include varie semplificazioni locali
+            RemoveRedundancies(),
+        ])
+    # level >= 3 (più aggressivo)
+    return SequencePass([
+        FullPeepholeOptimise(),  # include varie semplificazioni locali
+        KAKDecomposition(),      # decomposizioni 2q ottimali (~<=3 CX)
+        RemoveRedundancies(),
+    ])
+
+def _count_cx(c: Circuit,  arch: Architecture) -> int:
+    DecomposeSwapsToCXs(arc=arch, respect_direction=False).apply(c)  # traduci SWAP in CX
+    
+    cx = c.n_gates_of_type(OpType.CX)
+   
+    # (opz.) conta BRIDGE come 2 CX se presenti
+    try:
+        cx += 2 * c.n_gates_of_type(OpType.BRIDGE)
+    except AttributeError:
+        pass
+
+    print(f"numero cnot: {cx}")
+    return cx
+
+def _route_default(circ: Circuit, arch: Architecture) -> Circuit:
+    c = circ.copy()
+    mm = MappingManager(arch)
+    mm.route_circuit(c, [LexiLabellingMethod(), LexiRouteRoutingMethod(lookahead=10)])
+    return c
+
+def _route_identity(circ: Circuit, arch: Architecture) -> Circuit:
+    c = circ.copy()
+    nodes: List[Node] = sorted(list(arch.nodes), key=lambda n: n.index)
+    if len(c.qubits) > len(nodes):
+        raise ValueError("Circuito con più qubit dell'architettura.")
+    place_with_map(c, {q: nodes[i] for i, q in enumerate(c.qubits)})
+    RoutingPass(arch).apply(c)
+    return c
+
+def _route_line(circ: Circuit, arch: Architecture) -> Circuit:
+    c = circ.copy()
+    PlacementPass(LinePlacement(arch)).apply(c)
+    RoutingPass(arch).apply(c)
+    return c
+
+def _route_graph(circ: Circuit, arch: Architecture) -> Circuit:
+    c = circ.copy()
+    PlacementPass(GraphPlacement(arch)).apply(c)
+    RoutingPass(arch).apply(c)
+    return c
+
+# -------- funzione principale --------
+def evaluate_cnot_means_over_placements(
+    circ: Circuit,
+    arch: Architecture,
+    *,
+    levels: Iterable[int] = (0, 1, 2, 3),
+) -> Dict[str, float]:
+    """
+    Restituisce:
+    {
+      "default": media CNOT sui livelli,
+      "identity": ...,
+      "line": ...,
+      "graph": ...
+    }
+    """
+    placements: List[Tuple[str, callable]] = [
+        ("default",  _route_default),
+        ("identity", _route_identity),
+        ("line",     _route_line),
+        ("graph",    _route_graph),
+    ]
+
+    means: Dict[str, float] = {}
+
+    for name, router in placements:
+        counts: List[int] = []
+        for lvl in levels:
+            REBASE.apply(circ)                        # forza il tuo base set
+            c = router(circ, arch)                 # routing (placement scelto)
+            _apply_if_pass(c, _optim_pass(lvl))        # ottimizzazione (livello)
+           
+            counts.append(_count_cx(c, arch))            # conta i CNOT
+        means[name] = float(mean(counts)) if counts else float("nan")
+        print(f"media cnot {means[name]} per placment {name}")
+
+    return means
+
+def save_qc_results(
+    folder_results: str | Path,
+    filepath_adj: str,
+    rows: List[Dict],          # lista di dict (una riga per circuito/test)
+    kind: str                  # "qc" oppure "stateprep" o "ffqram" ecc.
+):
+    """
+    Salva un CSV per 'kind' con:
+      - File Input, Matrice Adiacenza, CNOT Logici
+      - CNOT medio (default/identity/line/graph)
+      - Overhead (default/identity/line/graph) %
+      - (opzionale) Fidelity (Original vs Clifford-T)
+
+    Crea anche un file summary raggruppando per CNOT Logici e mediando tutte le colonne numeriche.
+    """
+
+    # --- prepara cartella output
+    out_dir = ensure_directories(folder_results)
+
+    # --- nome base del file
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+
+    # --- colonne (chiavi -> etichette leggibili)
+    label_map = {
+        "file_input": "File Input",
+        "adj_name": "Matrice Adiacenza",
+        "cnot_logical": "CNOT Logici",
+
+        "cnot_default":  "CNOT medio (default)",
+        "cnot_identity": "CNOT medio (identity)",
+        "cnot_line":     "CNOT medio (line)",
+        "cnot_graph":    "CNOT medio (graph)",
+
+        "overhead_default_pct":  "Overhead (default) (%)",
+        "overhead_identity_pct": "Overhead (identity) (%)",
+        "overhead_line_pct":     "Overhead (line) (%)",
+        "overhead_graph_pct":    "Overhead (graph) (%)",
+    }
+
+    # determina se c'è la fidelity nei dati
+    has_fidelity = any("fidelity_logical" in r for r in rows)
+
+    # --- ordine colonne
+    col_order = [
+        "file_input", "adj_name", "cnot_logical",
+        "cnot_default", "cnot_identity", "cnot_line", "cnot_graph",
+        "overhead_default_pct", "overhead_identity_pct", "overhead_line_pct", "overhead_graph_pct",
+    ]
+
+
+    # --- header leggibili
+    headers = [label_map[k] for k in col_order]
+
+    # --- calcolo nome file progressivo
+    regex = csv_regex_filename(adj_name, kind)
+    next_idx = next_progressive_index(out_dir, regex)
+    out_csv = out_dir / f"{csv_name_base(adj_name, kind)}_{next_idx}.csv"
+
+    # --- scrittura CSV principale
+    with open(out_csv, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(headers)
+        for r in rows:
+            # riempi campi mancanti (es. se non hai calcolato tutti i placement)
+            w.writerow([r.get(k, "") for k in col_order])
+
+    write_summary_csv(out_csv, rows)
+
+
+def write_summary_csv(out_csv: Path, rows: List[Dict]):
+    """
+    Scrive un file di summary (_summary.csv) raggruppando per 'cnot_logical'
+    e calcolando la media dei valori numerici per ciascun mapping pytket:
+    default, identity, line, graph.
+    """
+    # raggruppa per CNOT logici
+    buckets = defaultdict(list)
+    for r in rows:
+        # ignora righe malformate
+        try:
+            buckets[int(r["cnot_logical"])].append(r)
+        except Exception:
+            continue
+
+    mapping_order = ["default", "identity", "line", "graph"]
+
+    # header fisso
+    summary_headers = [
+        "CNOT Logici",
+        "CNOT medio (default)",
+        "CNOT medio (identity)",
+        "CNOT medio (line)",
+        "CNOT medio (graph)",
+        "Overhead (default) (%)",
+        "Overhead (identity) (%)",
+        "Overhead (line) (%)",
+        "Overhead (graph) (%)",
+    ]
+
+    out_summary = out_csv.with_name(out_csv.stem + "_summary.csv")
+
+    def _safe_mean(iterable, ndigits=2):
+        nums = []
+        for v in iterable:
+            try:
+                nums.append(float(v))
+            except (TypeError, ValueError):
+                pass
+        return round(sum(nums) / len(nums), ndigits) if nums else ""
+
+    with open(out_summary, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(summary_headers)
+
+        for cnot_init in sorted(buckets.keys()):
+            rs = buckets[cnot_init]
+
+            # medie CNOT per mapping pytket
+            cnot_means = [
+                _safe_mean((r.get(f"cnot_{m}") for r in rs))
+                for m in mapping_order
+            ]
+            # medie Overhead per mapping pytket
+            oh_means = [
+                _safe_mean((r.get(f"overhead_{m}_pct") for r in rs))
+                for m in mapping_order
+            ]
+
+            row_out = [cnot_init] + cnot_means + oh_means
+            w.writerow(row_out)
+
+    print(f"Salvato summary: {out_summary}")
+
 """def matrix_to_architecture(adj_matrix):
     edges = []
     size = len(adj_matrix)
@@ -143,7 +403,7 @@ def create_circuit_from_simple_file(filename: str) -> Circuit:
 
 def build_stateprep_from_circuit(c: Circuit) -> Circuit:
     # ottieni statevector finale
-    sv = c.get_statevector()
+    sv = c.get_statevector() 
     
     n = c.n_qubits
    
@@ -225,11 +485,7 @@ def evaluate_routing(
     rebase_pass = AutoRebase({OpType.CX, OpType.U3, OpType.H, OpType.S, OpType.Sdg, OpType.T, OpType.Tdg, OpType.X, OpType.Y, OpType.Z})
 
     cnot = []
-    """for i in range(4):
-        circ_to_transpile = circ
-        pass_seq = ibm_like_default_pass(architecture, rebase_pass, i)
-        pass_seq.apply(circ_to_transpile)
-        cnot.append(circ_to_transpile.n_gates_of_type(OpType.CX))"""
+   
         
     # Definizione dei pass di compilazione
     pass_seq = SequencePass([
@@ -258,7 +514,7 @@ def write_compare_results_csv(out_csv: Path, rows: list, headers: list):
         for row in rows:
             w.writerow(row)
 
-def write_summary_csv(out_csv: Path, rows: list, headers: list):
+def write_summary_csv_old(out_csv: Path, rows: list, headers: list):
     """
     Raggruppa le righe per CNOT Originale e calcola le medie di overhead, entropia e fidelity.
     Salva in un file `_summary.csv` accanto al CSV principale.

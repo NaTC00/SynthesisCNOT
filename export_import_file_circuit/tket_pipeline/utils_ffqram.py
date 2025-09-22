@@ -1,11 +1,16 @@
 from locale import normalize
+import os
+from pathlib import Path
+import subprocess
+import sys
 from typing import List
 import numpy as np
-
+from qiskit import qpy
 from pytket.circuit import Circuit, OpType, Qubit, Op, QControlBox
 from sklearn.preprocessing import normalize
 from pytket.passes import DecomposeBoxes, DecomposeMultiQubitsCX
-from pytket.architecture import Architecture
+
+from pytket.extensions.qiskit import qiskit_to_tk
 
 def ffqram_qubits_required(N, M):
     return np.ceil(np.log2(N)) + np.ceil(np.log2(M)) + 1
@@ -112,9 +117,61 @@ def FFQRAM_tk(data: np.ndarray) -> Circuit:
             mc_ry = QControlBox(ry_op, n_controls=len(controls), control_state=addr)
             circ.add_gate(mc_ry, [*controls, reg[0]])
 
+    
     # 1. scompone i Box (QControlBox → MC gates)
-    DecomposeBoxes().apply(circ)
+    DecomposeBoxes(set({OpType.CX, OpType.U3, OpType.H, OpType.S, OpType.Sdg, OpType.T, OpType.Tdg, OpType.X, OpType.Y, OpType.Z})).apply(circ)
 
     # 2. scompone i multi-controllo in CNOT
+
     DecomposeMultiQubitsCX().apply(circ)
     return circ
+
+
+def build_tk_from_script(n_qubits: int, seed: int, qpy_path: str = "ffqram_rev_dec.qpy"):
+    # Percorsi assoluti
+    script_path_abs = Path("../qiskit_pipeline/build_ffqram_qiskit_to_pytket.py").resolve()
+    qpy_path_abs = Path(qpy_path).resolve()
+    qpy_path_abs.parent.mkdir(parents=True, exist_ok=True)
+
+    # Project root = cartella madre di qiskit_pipeline e tket_pipeline
+    project_root = script_path_abs.parents[1]  # .../export_import_file_circuit
+
+    # Ambiente: aggiungi il project root al PYTHONPATH (così lo script trova utils_ffqram)
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        [str(project_root), env.get("PYTHONPATH", "")]
+    )
+    # lancia lo script Qiskit
+    cmd = [sys.executable,  str(script_path_abs),
+           "--n_qubits", str(n_qubits),
+           "--out_qpy", qpy_path,
+           "--seed", str(seed)]
+    try:
+        # Imposto cwd alla cartella dello script, così i relativi interni funzionano
+        res = subprocess.run(
+            cmd, check=True, capture_output=True, text=True,
+            cwd=str(script_path_abs.parent), env=env
+        )
+        if res.stdout.strip():
+            print(res.stdout.strip())
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"Errore nello script Qiskit (exit {e.returncode}).\n"
+            f"CMD: {' '.join(cmd)}\n"
+            f"CWD: {script_path_abs.parent}\n"
+            f"STDOUT:\n{e.stdout}\n"
+            f"STDERR:\n{e.stderr}\n"
+            f"PYTHONPATH:\n{env.get('PYTHONPATH')}\n"
+        ) from e
+
+    # Carica il QPY e converti a PyTKET
+    with open(qpy_path_abs, "rb") as f:
+        qc_rev_dec = qpy.load(f)[0]
+    tk_circ = qiskit_to_tk(qc_rev_dec)
+    return tk_circ
+
+    # carica il circuito Qiskit e converte a PyTKET
+    with open(qpy_path, "rb") as f:
+        qc_rev_dec = qpy.load(f)[0]
+    tk_circ = qiskit_to_tk(qc_rev_dec)
+    return tk_circ

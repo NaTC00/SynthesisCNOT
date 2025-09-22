@@ -6,12 +6,20 @@ from typing import Iterable
 from pytket.architecture import Architecture
 from collections import defaultdict
 import csv
-from pytket.circuit import OpType
 import numpy as np
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler, normalize as sk_normalize
-from pytket.circuit import Circuit
-
+from pytket.circuit import Circuit, OpType
+from pytket.utils import Graph
+from pytket.circuit import Circuit, OpType, Qubit, Op, QControlBox
+from pytket.passes import DecomposeBoxes, DecomposeMultiQubitsCX
+from pytket.circuit.display import render_circuit_jupyter as draw
+from pytket.passes import (
+    SequencePass, DecomposeBoxes, RemoveRedundancies, AutoRebase,
+    SynthesiseTket, FullPeepholeOptimise,
+    KAKDecomposition, CliffordSimp, RoutingPass, DecomposeSwapsToCXs, DecomposeMultiQubitsCX
+)
+from pytket.transform import Transform 
 from utils_tket import (
    
     load_adjacency_matrix_from_file,
@@ -21,21 +29,22 @@ from utils_tket import (
     create_circuit_from_simple_file,
     check_input_folder,
     build_stateprep_from_circuit,
-    fidelity,
-    get_statevector,
     evaluate_routing,
     write_compare_results_csv,
     write_summary_csv,
     csv_regex_filename,
     next_progressive_index,
     csv_name_base,
-    fidelity_between_circuits
+    fidelity_between_circuits,
+    evaluate_cnot_means_over_placements,
+    save_qc_results
     
 )
 
 from utils_ffqram import(
     generate_normalized_dataset,
-    FFQRAM_tk
+    FFQRAM_tk,
+    build_tk_from_script
 )
 
 
@@ -78,7 +87,7 @@ def save_qc_vs_stateprep_results(
 
     print(f"Salvati: {out_csv} e {out_csv.with_name(out_csv.stem + '_summary.csv')}")
 
-def evaluate_qc_vs_stateprep(
+def evaluate_qc_old(
     circ: Circuit,
     filepath_adj: str,   
     filepath_circ: str,                   
@@ -125,7 +134,60 @@ def evaluate_qc_vs_stateprep(
 
     return row
 
-def process_folder_qc_vs_stateprep(
+
+def evaluate_qc(
+    qc: Circuit,
+    filepath_adj: str,
+    filepath_circ: str,
+    arch: Architecture,
+    levels: Iterable[int] = (0, 1, 2, 3)
+):
+    adj_name = os.path.splitext(os.path.basename(filepath_adj))[0]
+    file_input = os.path.basename(filepath_circ) if filepath_circ else None
+
+   
+   
+
+    # CNOT logici (prima del mapping)
+    cnot_original_logical = qc.n_gates_of_type(OpType.CX)
+    print(cnot_original_logical)
+
+   
+    # Medie CNOT per mapping
+    means_per_layout = evaluate_cnot_means_over_placements(
+        qc,
+        arch,
+        levels=levels
+    )
+
+    # Overhead per mapping
+    if cnot_original_logical == 0:
+        overhead_per_layout_pct = {k: 0.0 for k in means_per_layout}
+    else:
+        overhead_per_layout_pct = {
+            name: (avg_cx - cnot_original_logical) / cnot_original_logical * 100.0
+            for name, avg_cx in means_per_layout.items()
+        }
+
+    # --- Costruisco dizionario finale per output tabellare
+    result = {
+        "file_input": file_input,
+        "adj_name": adj_name,
+        "cnot_logical": cnot_original_logical,
+    }
+
+    # aggiungo colonne per CNOT medi
+    for name, avg_cx in means_per_layout.items():
+        result[f"cnot_{name}"] = round(avg_cx, 2)
+
+    # aggiungo colonne per overhead %
+    for name, overhead in overhead_per_layout_pct.items():
+        result[f"overhead_{name}_pct"] = round(overhead, 2)
+
+
+    return result
+
+def process_folder_qc(
     folder_input: str | Path,
     filepath_adj: str,
     folder_results: str | Path,
@@ -142,10 +204,13 @@ def process_folder_qc_vs_stateprep(
         print(filepath_circ)
         qc = create_circuit_from_simple_file(filepath_circ) 
 
-        row = evaluate_qc_vs_stateprep(qc, filepath_adj, filepath_circ, architecture)
+        
+
+        row = evaluate_qc(qc, filepath_adj, filepath_circ, architecture)
         rows.append(row)
 
-    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="circuit")
+    save_qc_results(folder_results, filepath_adj, rows, kind="qc")
+    #save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="circuit")
 
 
 
@@ -159,26 +224,25 @@ def run_ffqram_experiments_on_random_datasets(
 ):
    
     # --------- calcolo dimensione dataset 2^k x 2^k ----------
-    rows = []
+    rows_qc = []
+    rows_stateprep = []
     for seed in seeds:
-        # 1) genera dataset normalizzato 2^k x 2^k con seed diverso
-        #N, M = adjust_dataset_for_hw(num_qubits)
-        bits_needed = bits_needed = int(np.ceil(np.log2(num_qubits)))
-        dataset = generate_normalized_dataset(pow(2, bits_needed), pow(2, bits_needed), seed=seed)
 
-        # 2) costruisco circuito FF-QRAM
-        circ_ffqram = FFQRAM_tk(dataset)
+        circ_ffqram = build_tk_from_script(num_qubits, seed)
 
-        # 4) raccolgo i dati
-        row = evaluate_qc_vs_stateprep(
-            circ=circ_ffqram,
-            filepath_adj=filepath_adj,
-            filepath_circ=None,
-            architecture=architecture
-        )
-        rows.append(row)
+        rec_qc = evaluate_qc(circ_ffqram, filepath_adj, None, architecture, levels=(0,1,2,3))
+        rows_qc.append(rec_qc)
 
-    save_qc_vs_stateprep_results(folder_results, filepath_adj, rows, kind="ffqram")
+        # --- costruisco StatePreparation dallo stato di qc_ffqram
+        qc_stateprep = build_stateprep_from_circuit(circ_ffqram)
+
+        rec_sp = evaluate_qc(qc_stateprep, filepath_adj, None, architecture, levels=(0,1,2,3))
+        rows_stateprep.append(rec_sp)
+
+    
+
+    save_qc_results(folder_results, filepath_adj, rows_qc, kind="ffqram")
+    save_qc_results(folder_results, filepath_adj, rows_stateprep, kind="stateprep")
 
 def main():
 
@@ -207,13 +271,15 @@ def main():
         
         check_input_folder(folder_input)
 
-        process_folder_qc_vs_stateprep(folder_input, filepath_adj, folder_results, architecture)
+        process_folder_qc(folder_input, filepath_adj, folder_results, architecture)
 
         #transpile_and_evaluate_all_random_circuits_tket(filepath_adj, folder_input, folder_results, architecture)
 
     elif choice == '2':
         
-       run_ffqram_experiments_on_random_datasets(filepath_adj, folder_results, architecture, num_qubits, seeds=(101, 202, 303))
+        
+        run_ffqram_experiments_on_random_datasets(filepath_adj, folder_results, architecture, num_qubits, seeds=(101, 202, 303))
+        
 
     else:
         print("Scelta non valida. Uscita.")

@@ -11,12 +11,11 @@ import argparse
 
 
 JOBS = [
-    ("16_square",     "../Adj/adj_16_square.txt",   "./qiskit_results/16CNOT/", "../Input/16CNOT/"),
-    ("16_Rigetti",    "../Adj/adj_16_Rigetti.txt",  "./qiskit_results/16CNOT/", "../Input/16CNOT/"),
-    ("16_IBMQX5",     "../Adj/adj_16_IBMQX5.txt",   "./qiskit_results/16CNOT/", "../Input/16CNOT/"),
-    ("20_IBMQX20",    "../Adj/adj_20_IBMQX20.txt",  "./qiskit_results/20CNOT/", "../Input/20CNOT/"),
-    ("20_penguinv4",  "../Adj/adj_20_penguinv4.txt","./qiskit_results/20CNOT/", "../Input/20CNOT/"),
-    ("20_penguinv3",  "../Adj/adj_20_penguinv3.txt","./qiskit_results/20CNOT/", "../Input/20CNOT/"),
+    ("adj_9_square",     "../Adj/adj_9_square.txt",   "./qiskit_results/9CNOT/", "../Input/9CNOT/"),
+    ("adj_9_line",    "../Adj/adj_9_line.txt",   "./qiskit_results/9CNOT/", "../Input/9CNOT/"),
+    ("adj_9_cycle",     "../Adj/adj_9_cycle.txt",    "./qiskit_results/9CNOT/", "../Input/9CNOT/"),
+    ("adj_9_all",    "../Adj/adj_9_all.txt",   "./qiskit_results/9CNOT/", "../Input/9CNOT/"),
+    ("adj_9_torus",  "../Adj/adj_9_torus.txt", "./qiskit_results/9CNOT/", "../Input/9CNOT/")
 ]
 
 # ------------------------------------------------------------
