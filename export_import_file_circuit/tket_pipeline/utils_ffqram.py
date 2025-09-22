@@ -127,7 +127,7 @@ def FFQRAM_tk(data: np.ndarray) -> Circuit:
     return circ
 
 
-def build_tk_from_script(n_qubits: int, seed: int, qpy_path: str = "ffqram_rev_dec.qpy"):
+def build_tk_from_script(n_qubits: int, seed: int, qpy_path: str = "../qiskit_pipeline/ffqram_rev_dec.qpy"):
     # Percorsi assoluti
     script_path_abs = Path("../qiskit_pipeline/build_ffqram_qiskit_to_pytket.py").resolve()
     qpy_path_abs = Path(qpy_path).resolve()
@@ -144,7 +144,7 @@ def build_tk_from_script(n_qubits: int, seed: int, qpy_path: str = "ffqram_rev_d
     # lancia lo script Qiskit
     cmd = [sys.executable,  str(script_path_abs),
            "--n_qubits", str(n_qubits),
-           "--out_qpy", qpy_path,
+           "--out_qpy", str(qpy_path_abs),
            "--seed", str(seed)]
     try:
         # Imposto cwd alla cartella dello script, così i relativi interni funzionano
@@ -170,8 +170,4 @@ def build_tk_from_script(n_qubits: int, seed: int, qpy_path: str = "ffqram_rev_d
     tk_circ = qiskit_to_tk(qc_rev_dec)
     return tk_circ
 
-    # carica il circuito Qiskit e converte a PyTKET
-    with open(qpy_path, "rb") as f:
-        qc_rev_dec = qpy.load(f)[0]
-    tk_circ = qiskit_to_tk(qc_rev_dec)
-    return tk_circ
+

@@ -343,7 +343,11 @@ def run_ffqram_experiments_on_random_datasets(
 
         num_qubits = coupling_map.size()
 
-        K = int(np.ceil(np.log2(num_qubits)))
+       # K = int(np.ceil(np.log2(num_qubits)))
+
+        if num_qubits < 3 or num_qubits % 2 == 0:
+            raise ValueError("I qubit totali devono essere dispari e ≥ 3 (2k+1).")
+        K = (num_qubits - 1) // 2
 
         # 1) genera dataset normalizzato 2^k x 2^k con seed diverso
         dataset = generate_normalized_dataset(pow(2, K), pow(2, K), seed=seed)

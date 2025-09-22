@@ -297,9 +297,19 @@ def to_clifford_t_if_needed(qc: QuantumCircuit) -> QuantumCircuit:
     if is_clifford_t(qc):
         return qc
     else: 
-        return qasm_to_clifford_and_t(qc)
+        return circ_in_basis(qc) #qasm_to_clifford_and_t(qc)
     
 
+def circ_in_basis(qc):
+    # Solo traduzione alla base, niente routing, niente layout
+    q_unrolled = transpile(
+        qc,
+        basis_gates=CLIFFORD_T_BASIS,
+        coupling_map=None,        # no routing
+        layout_method=None,       # nessun layout imposto
+        optimization_level=0      # evita cancellazioni che confondono il confronto
+    )
+    return q_unrolled
 
 
 def evaluate_cnot_means_over_layouts(
